@@ -22,62 +22,7 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 # teams in tournaments from 2018 - 2021, urls both with and without trainer nationalities
-sample_team_url = ["https://www.pikalytics.com/results/worlds18m", "https://www.pikalytics.com/results/worlds18s",
-                           "https://www.pikalytics.com/results/worlds18j", "https://www.pikalytics.com/results/naint18m",
-                           "https://www.pikalytics.com/results/naint18s", "https://www.pikalytics.com/results/naint18j",
-                           "https://www.pikalytics.com/results/latamint18m", "https://www.pikalytics.com/results/latamint18s",
-                           "https://www.pikalytics.com/results/latamint18j", "https://www.pikalytics.com/results/oceareg18m",
-                           "https://www.pikalytics.com/results/oceareg18s", "https://www.pikalytics.com/results/oceareg18j",
-                           "https://www.pikalytics.com/results/naint19m", "https://www.pikalytics.com/results/naint19s",
-                           "https://www.pikalytics.com/results/naint19j", "https://www.pikalytics.com/results/euint19m",
-                           "https://www.pikalytics.com/results/euint19s", "https://www.pikalytics.com/results/euint19j",
-                           "https://www.pikalytics.com/results/oceania19m", "https://www.pikalytics.com/results/oceania19s",
-                           "https://www.pikalytics.com/results/oceania19j", "https://www.pikalytics.com/results/latamint19m",
-                           "https://www.pikalytics.com/results/latamint19s", "https://www.pikalytics.com/results/latamint19j",
-                           "https://www.pikalytics.com/results/pc2fin20", "https://www.pikalytics.com/results/pc2reg20",
-                           "https://www.pikalytics.com/results/pcfin20", "https://www.pikalytics.com/results/oceania20m",
-                           "https://www.pikalytics.com/results/oceania20s", "https://www.pikalytics.com/results/oceania20j",
-                           "https://www.pikalytics.com/results/pc25inv21", "https://www.pikalytics.com/results/pc4fin21",
-                           "https://www.pikalytics.com/results/pc4reg21", "https://www.pikalytics.com/results/pc3fin21",
-                           "https://www.pikalytics.com/results/pc3reg21", "https://www.pikalytics.com/results/shefreg18m", "https://www.pikalytics.com/results/madreg18m",
-                              "https://www.pikalytics.com/results/roanreg18m", "https://www.pikalytics.com/results/torreg18m",
-                              "https://www.pikalytics.com/results/saltreg18m", "https://www.pikalytics.com/results/sindreg18m",
-                              "https://www.pikalytics.com/results/portreg18m", "https://www.pikalytics.com/results/charreg18m",
-                              "https://www.pikalytics.com/results/colinreg18m", "https://www.pikalytics.com/results/malmoreg18m",
-                              "https://www.pikalytics.com/results/leipreg18m", "https://www.pikalytics.com/results/leipreg18s",
-                              "https://www.pikalytics.com/results/leipreg18j", "https://www.pikalytics.com/results/dalreg18m",
-                              "https://www.pikalytics.com/results/dalreg18s", "https://www.pikalytics.com/results/dalreg18j",
-                              "https://www.pikalytics.com/results/madisonreg19m", "https://www.pikalytics.com/results/madisonreg19s",
-                              "https://www.pikalytics.com/results/madisonreg19j", "https://www.pikalytics.com/results/santareg19m",
-                              "https://www.pikalytics.com/results/santareg19s", "https://www.pikalytics.com/results/santareg19j",
-                              "https://www.pikalytics.com/results/bristreg19m", "https://www.pikalytics.com/results/bristreg19s",
-                              "https://www.pikalytics.com/results/bristreg19j", "https://www.pikalytics.com/results/hartreg19m",
-                              "https://www.pikalytics.com/results/hartreg19s", "https://www.pikalytics.com/results/hartreg19j",
-                              "https://www.pikalytics.com/results/daytonareg19m", "https://www.pikalytics.com/results/daytonareg19s",
-                              "https://www.pikalytics.com/results/daytonareg19j", "https://www.pikalytics.com/results/greenreg19m",
-                              "https://www.pikalytics.com/results/greenreg19j", "https://www.pikalytics.com/results/bramreg19m",
-                              "https://www.pikalytics.com/results/bramreg19s", "https://www.pikalytics.com/results/bramreg19j",
-                              "https://www.pikalytics.com/results/colreg19m", "https://www.pikalytics.com/results/colreg19s",
-                              "https://www.pikalytics.com/results/colreg19j", "https://www.pikalytics.com/results/dalreg19m",
-                              "https://www.pikalytics.com/results/dalreg19s", "https://www.pikalytics.com/results/dalreg19j",
-                              "https://www.pikalytics.com/results/haroreg19m", "https://www.pikalytics.com/results/haroreg19s",
-                              "https://www.pikalytics.com/results/haroreg19j", "https://www.pikalytics.com/results/anareg19m",
-                              "https://www.pikalytics.com/results/anareg19s", "https://www.pikalytics.com/results/anareg19j",
-                              "https://www.pikalytics.com/results/roreg19m", "https://www.pikalytics.com/results/roreg19s",
-                              "https://www.pikalytics.com/results/roreg19j", "https://www.pikalytics.com/results/portreg19m",
-                              "https://www.pikalytics.com/results/portreg19s", "https://www.pikalytics.com/results/portreg19j",
-                              "https://www.pikalytics.com/results/memreg19m", "https://www.pikalytics.com/results/memreg19s",
-                              "https://www.pikalytics.com/results/memreg19j", "https://www.pikalytics.com/results/frankreg19m",
-                              "https://www.pikalytics.com/results/frankreg19s", "https://www.pikalytics.com/results/frankreg19j",
-                              "https://www.pikalytics.com/results/philreg19m", "https://www.pikalytics.com/results/philreg19s",
-                              "https://www.pikalytics.com/results/philreg19j", "https://www.pikalytics.com/results/pcinv20",
-                              "https://www.pikalytics.com/results/malmoreg20m", "https://www.pikalytics.com/results/malmoreg20s",
-                              "https://www.pikalytics.com/results/collinsvillereg20m", "https://www.pikalytics.com/results/collinsvillereg20s",
-                              "https://www.pikalytics.com/results/collinsvillereg20j", "https://www.pikalytics.com/results/dallasreg20m",
-                              "https://www.pikalytics.com/results/dallasreg20s", "https://www.pikalytics.com/results/dallasreg20j",
-                              "https://www.pikalytics.com/results/bochumreg20m", "https://www.pikalytics.com/results/bochumreg20s",
-                              "https://www.pikalytics.com/results/bochumreg20j"]
-
+sample_team_url = ["https://www.pikalytics.com/results/worlds18m"]
 
 
 all_exported_teams = []
@@ -229,9 +174,9 @@ for key in all_pokemon:
           all_vals_p = (name_val_p, other_val1, other_val2 )
 
 
-          mycursor.execute(sql, all_vals_p)
+          #mycursor.execute(sql, all_vals_p)
 
-          mydb.commit()
+          #mydb.commit()
 
 
 # Fills out the Team table
@@ -255,6 +200,32 @@ for key in team_table_dict:
           #print(all_vals_team)
 
 
-          mycursor.execute(sql_teams, all_vals_team)
+          #mycursor.execute(sql_teams, all_vals_team)
 
-          mydb.commit()
+          #mydb.commit()
+
+#make TeamID, pokemon_id table. Two columns long: teamID and pokemonIDs. Each teamID repeats six times.
+
+for key in team_table_dict:
+    print(key, "->", team_table_dict[key])
+
+
+# make the data into a dataframe
+team_ids = []
+pokemon_ids = []
+
+# get a list of the team ids
+for key in team_table_dict:
+    team_ids.append(key)
+
+print(team_ids)
+
+# get a list of the pokemon_ids
+for key in team_table_dict:
+    pokemon_ids.append(str(team_table_dict[key]).split(",")[1:7])
+
+print(pokemon_ids)
+
+
+
+# insert the dataframe into a table
