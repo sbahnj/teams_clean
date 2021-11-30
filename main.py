@@ -27,7 +27,7 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
-# teams in tournaments from 2018 - 2021, urls both with and without trainer nationalities
+# teams in tournaments from 2016 - 2021, urls both with and without trainer nationalities
 sample_team_url = ["https://www.pikalytics.com/results/pc25inv21"]
 
 
@@ -124,7 +124,7 @@ for item in str(pokemon_list).split(","):
     if "item" in item and "item_us" not in item:
         pokemon_list_item.append(str(item).replace("item\":", ""))
 
-print(pokemon_list_names)
+
 #get the can_gmax list for the pokemon
 for name in pokemon_list_names:
 
@@ -161,8 +161,7 @@ for name in pokemon_list_names:
 
 all_pokemon = {i:pokemon_full_list[i] for i in range(0, len(pokemon_full_list))}
 
-for key in all_pokemon:
-    print(key, "->", all_pokemon[key])
+
 
 
 
@@ -312,3 +311,34 @@ for team_id in team_ids:
 
 # insert the dataframe into a table
 #df.to_sql("individual_pokemon", engine, if_exists="replace")
+
+
+# make the pokemon dict into a dataframe
+#all_pokemon_df = pd.DataFrame.from_dict(all_pokemon, orient="index")
+
+#print(all_pokemon_df)
+
+#insert the pokemon datafram into a table
+#all_pokemon_df.to_sql("all_pokemon", engine, if_exists="replace")
+
+#make a dataframe out of the pokemon info lists
+for pokemon_id in pokemon_ids:
+    id_clean = str(pokemon_id).replace("[", "")
+    id_clean2 = id_clean.replace("]", "")
+
+    frame_row = [id_clean2, 0, 0, 0, 0]
+
+    data_list.append(frame_row)
+
+df_all_pokemon = pd.DataFrame(data_list, columns=['pokemon_id', 'species_name', 'ability', "item", "can_gmax"])
+
+
+# Updating the species name
+i = 0
+for name in pokemon_list_names:
+    print(name)
+
+    df.at[i, "species_name"] = name
+    i = i + 1
+
+print(df_all_pokemon)
