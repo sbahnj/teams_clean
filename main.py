@@ -28,7 +28,7 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 # teams in tournaments from 2018 - 2021, urls both with and without trainer nationalities
-sample_team_url = ["https://www.pikalytics.com/results/worlds18m"]
+sample_team_url = ["https://www.pikalytics.com/results/pc25inv21"]
 
 
 all_exported_teams = []
@@ -70,7 +70,7 @@ for key in teams_dict:
 
      team_info_string = team_info_string + str(teams_dict[key])
 
-print(team_info_string)
+
 
 pokemon_list = []
 # need to get all names
@@ -85,6 +85,8 @@ pokemon_list_types = []
 pokemon_list_names = []
 pokemon_list_abilities = []
 pokemon_list_moves = []
+pokemon_list_item = []
+pokemon_can_gmax = []
 
 for item in str(pokemon_list).split(":"):
     if "nature" in str(item):
@@ -117,6 +119,26 @@ for item in str(pokemon_list).split("]"):
         list.append(item.split("moves")[1])
         pokemon_list_moves.append(list)
 
+# find the held item for each pokemon
+for item in str(pokemon_list).split(","):
+    if "item" in item and "item_us" not in item:
+        pokemon_list_item.append(str(item).replace("item\":", ""))
+
+print(pokemon_list_names)
+#get the can_gmax list for the pokemon
+for name in pokemon_list_names:
+
+    regex = "(.*)-gmax\","
+
+    match = re.match(regex, name)
+
+    if match:
+        pokemon_can_gmax.append("T")
+
+    else:
+        pokemon_can_gmax.append("F")
+
+
 
 
 pokemon_full_list = []
@@ -128,7 +150,8 @@ for name in pokemon_list_names:
 
 
     if r <= len(pokemon_list_types)-1:
-        value_list = name + pokemon_list_types[r] + "," + pokemon_list_abilities[r].replace("ability\":", "") + "," + str(pokemon_list_moves[r])
+        value_list = name + pokemon_list_types[r] + "," + pokemon_list_abilities[r].replace("ability\":", "") + "," + str(pokemon_list_moves[r]) \
+                     + "," + pokemon_list_item[r] + "," + pokemon_can_gmax[r]
         pokemon_full_list.append(value_list)
         r = r + 1
 
