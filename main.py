@@ -7,6 +7,8 @@ import requests
 import unidecode as unidecode
 from bs4 import BeautifulSoup
 
+pd.set_option('display.max_columns', None)
+
 from sqlalchemy import create_engine
 engine = create_engine("mysql://"+"root"+":"+"Colormewild1!"+"@"+"localhost"+"/"+"team")
 
@@ -92,7 +94,12 @@ for item in str(pokemon_list).split(":"):
     if "nature" in str(item):
         name_string = str(item.replace("\"nature\"", ""))
 
-        pokemon_list_names.append(name_string)
+        no_quotation = name_string.replace("\"", "")
+        no_comma = no_quotation.capitalize().replace(",", "")
+
+        no_nums = no_comma.replace("%20", " ")
+
+        pokemon_list_names.append(no_nums)
 
 
 
@@ -126,17 +133,27 @@ for item in str(pokemon_list).split(","):
 
 
 #get the can_gmax list for the pokemon
+
+
+
+adjusted_names = []
 for name in pokemon_list_names:
 
-    regex = "(.*)-gmax\","
+    regex = "(.*)-gmax"
 
     match = re.match(regex, name)
 
     if match:
         pokemon_can_gmax.append("T")
 
+
+        adjusted_names.append(match.group(1))
+
+
     else:
         pokemon_can_gmax.append("F")
+
+        adjusted_names.append(name)
 
 
 
@@ -322,23 +339,57 @@ for team_id in team_ids:
 #all_pokemon_df.to_sql("all_pokemon", engine, if_exists="replace")
 
 #make a dataframe out of the pokemon info lists
-for pokemon_id in pokemon_ids:
+data_list_all_pokemon = []
+for pokemon_id in str(pokemon_ids).split(","):
     id_clean = str(pokemon_id).replace("[", "")
     id_clean2 = id_clean.replace("]", "")
 
-    frame_row = [id_clean2, 0, 0, 0, 0]
 
-    data_list.append(frame_row)
 
-df_all_pokemon = pd.DataFrame(data_list, columns=['pokemon_id', 'species_name', 'ability', "item", "can_gmax"])
+    frame_row = [id_clean2, "2", "3", "4", "5"]
+
+
+
+    data_list_all_pokemon.append(frame_row)
+
+df_all_pokemon = pd.DataFrame(data_list_all_pokemon, columns=['pokemon_id', 'species_name', 'ability', "item", "can_gmax"])
 
 
 # Updating the species name
 i = 0
-for name in pokemon_list_names:
-    print(name)
+for name in adjusted_names:
 
-    df.at[i, "species_name"] = name
+
+    df_all_pokemon.at[i, "species_name"] = name
     i = i + 1
 
-print(df_all_pokemon)
+# updating the ability
+i = 0
+for ability in pokemon_list_abilities:
+
+
+    df_all_pokemon.at[i, "ability"] = ability
+    i = i + 1
+
+#updating the item
+i = 0
+for item in pokemon_list_item:
+
+
+    df_all_pokemon.at[i, "item"] = item
+    i = i + 1
+
+# updating the can_gmax
+i = 0
+for value in pokemon_can_gmax:
+
+
+    df_all_pokemon.at[i, "can_gmax"] = value
+    i = i + 1
+
+
+
+#insert the pokemon datafram into a table
+df_all_pokemon.to_sql("all_pokemon", engine, if_exists="replace")
+
+
