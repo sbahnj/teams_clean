@@ -1,4 +1,5 @@
 import re
+from turtle import pd
 
 import mysql.connector
 import mysql as mysql
@@ -225,6 +226,21 @@ for key in team_table_dict:
     pokemon_ids.append(str(team_table_dict[key]).split(",")[1:7])
 
 print(pokemon_ids)
+
+data_list = []
+# Creating the data frames
+for team_id in team_ids:
+
+
+
+    frame_row = [team_id, "p_id"]
+
+    data_list.append(frame_row)
+
+
+df = pd.DataFrame(data_list, columns=['team_id', 'pokemon_id'])
+
+
 
 
 
