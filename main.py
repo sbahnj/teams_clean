@@ -1,5 +1,5 @@
 import re
-from turtle import pd
+import pandas as pd
 
 import mysql.connector
 import mysql as mysql
@@ -218,22 +218,29 @@ pokemon_ids = []
 # get a list of the team ids
 for key in team_table_dict:
     team_ids.append(key)
+    team_ids.append(key)
+    team_ids.append(key)
+    team_ids.append(key)
+    team_ids.append(key)
+    team_ids.append(key)
 
-print(team_ids)
+
 
 # get a list of the pokemon_ids
 for key in team_table_dict:
-    pokemon_ids.append(str(team_table_dict[key]).split(",")[1:7])
+    pokemon_id_string = (str(team_table_dict[key]).split(",")[1:7])
+    pokemon_ids.append(pokemon_id_string)
 
-print(pokemon_ids)
+
 
 data_list = []
 # Creating the data frames
-for team_id in team_ids:
+for pokemon_id in str(pokemon_ids).split(","):
 
+    id_clean = str(pokemon_id).replace("[", "")
+    id_clean2 = id_clean.replace("]", "")
 
-
-    frame_row = [team_id, "p_id"]
+    frame_row = [0, id_clean2]
 
     data_list.append(frame_row)
 
@@ -241,7 +248,16 @@ for team_id in team_ids:
 df = pd.DataFrame(data_list, columns=['team_id', 'pokemon_id'])
 
 
+# Updating the team id
+i = 0
+for team_id in team_ids:
 
+         df.at[i, "team_id"] = team_id
+         i = i + 1
+
+
+print(df)
 
 
 # insert the dataframe into a table
+
