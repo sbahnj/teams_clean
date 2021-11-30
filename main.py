@@ -117,7 +117,10 @@ for item in str(pokemon_list).split("}"):
 for item in str(pokemon_list).split(","):
 
     if "ability" in str(item):
-        pokemon_list_abilities.append(item)
+        ability_clean = item.replace("ability", "")
+        ability_clean2 = ability_clean.replace(":", "")
+        ability_clean3 = ability_clean2.replace("\"", "")
+        pokemon_list_abilities.append(ability_clean3)
 
 # find the moves list for each pokemon
 for item in str(pokemon_list).split("]"):
