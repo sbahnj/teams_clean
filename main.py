@@ -70,7 +70,7 @@ for key in teams_dict:
 
      team_info_string = team_info_string + str(teams_dict[key])
 
-
+print(team_info_string)
 
 pokemon_list = []
 # need to get all names
@@ -83,10 +83,14 @@ for item in team_info_string.split("types"):
 
 pokemon_list_types = []
 pokemon_list_names = []
+pokemon_list_abilities = []
+pokemon_list_moves = []
 
 for item in str(pokemon_list).split(":"):
     if "nature" in str(item):
-        pokemon_list_names.append(item)
+        name_string = str(item.replace("\"nature\"", ""))
+
+        pokemon_list_names.append(name_string)
 
 
 
@@ -98,6 +102,23 @@ for item in str(pokemon_list).split("}"):
         pokemon_list_types.append(item)
 
 
+# find the ability, moves list, held item, can_gmax for each pokemon
+
+# find the ability for each pokemon
+for item in str(pokemon_list).split(","):
+
+    if "ability" in str(item):
+        pokemon_list_abilities.append(item)
+
+# find the moves list for each pokemon
+for item in str(pokemon_list).split("]"):
+    if "moves" in str(item):
+        list = []
+        list.append(item.split("moves")[1])
+        pokemon_list_moves.append(list)
+
+
+
 pokemon_full_list = []
 value_list = []
 r = 0
@@ -107,7 +128,7 @@ for name in pokemon_list_names:
 
 
     if r <= len(pokemon_list_types)-1:
-        value_list = name + pokemon_list_types[r]
+        value_list = name + pokemon_list_types[r] + "," + pokemon_list_abilities[r].replace("ability\":", "") + "," + str(pokemon_list_moves[r])
         pokemon_full_list.append(value_list)
         r = r + 1
 
@@ -116,6 +137,9 @@ for name in pokemon_list_names:
 
 
 all_pokemon = {i:pokemon_full_list[i] for i in range(0, len(pokemon_full_list))}
+
+for key in all_pokemon:
+    print(key, "->", all_pokemon[key])
 
 
 
@@ -260,8 +284,8 @@ for team_id in team_ids:
          i = i + 1
 
 
-print(df)
+
 
 
 # insert the dataframe into a table
-df.to_sql("individual_pokemon", engine, if_exists="replace")
+#df.to_sql("individual_pokemon", engine, if_exists="replace")
