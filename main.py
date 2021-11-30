@@ -132,7 +132,9 @@ for item in str(pokemon_list).split("]"):
 # find the held item for each pokemon
 for item in str(pokemon_list).split(","):
     if "item" in item and "item_us" not in item:
-        pokemon_list_item.append(str(item).replace("item\":", ""))
+        item_clean = str(item).replace("item\":", "")
+        item_clean2 = item_clean.replace("\"", "")
+        pokemon_list_item.append(item_clean2)
 
 
 #get the can_gmax list for the pokemon
