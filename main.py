@@ -7,6 +7,11 @@ import requests
 import unidecode as unidecode
 from bs4 import BeautifulSoup
 
+from sqlalchemy import create_engine
+engine = create_engine("mysql://"+"root"+":"+"Colormewild1!"+"@"+"localhost"+"/"+"team")
+
+
+
 # Connection info for the database
 mydb = mysql.connector.connect(
 
@@ -207,8 +212,7 @@ for key in team_table_dict:
 
 #make TeamID, pokemon_id table. Two columns long: teamID and pokemonIDs. Each teamID repeats six times.
 
-for key in team_table_dict:
-    print(key, "->", team_table_dict[key])
+
 
 
 # make the data into a dataframe
@@ -260,4 +264,4 @@ print(df)
 
 
 # insert the dataframe into a table
-
+df.to_sql("individual_pokemon", engine, if_exists="replace")
