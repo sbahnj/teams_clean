@@ -144,44 +144,47 @@ for item in str(pokemon_list).split(","):
 adjusted_names = []
 for name in pokemon_list_names:
 
+    boolean = False
+
     regex = "(.*)-gmax"
 
     match = re.match(regex, name)
 
     if match:
-        pokemon_can_gmax.append("T")
+        boolean = True
+        pokemon_can_gmax.append(boolean)
 
 
         adjusted_names.append(match.group(1))
 
 
     else:
-        pokemon_can_gmax.append("F")
+        pokemon_can_gmax.append(boolean)
 
         adjusted_names.append(name)
 
 
 
 
-pokemon_full_list = []
-value_list = []
-r = 0
-
-for name in pokemon_list_names:
-
-
-
-    if r <= len(pokemon_list_types)-1:
-        value_list = name + pokemon_list_types[r] + "," + pokemon_list_abilities[r].replace("ability\":", "") + "," + str(pokemon_list_moves[r]) \
-                     + "," + pokemon_list_item[r] + "," + pokemon_can_gmax[r]
-        pokemon_full_list.append(value_list)
-        r = r + 1
-
-
-
-
-
-all_pokemon = {i:pokemon_full_list[i] for i in range(0, len(pokemon_full_list))}
+#pokemon_full_list = []
+# value_list = []
+# r = 0
+#
+# for name in pokemon_list_names:
+#
+#
+#
+#     if r <= len(pokemon_list_types)-1:
+#         value_list = name + pokemon_list_types[r] + "," + pokemon_list_abilities[r].replace("ability\":", "") + "," + str(pokemon_list_moves[r]) \
+#                      + "," + pokemon_list_item[r] + "," + pokemon_can_gmax[r]
+#         pokemon_full_list.append(value_list)
+#         r = r + 1
+#
+#
+#
+#
+#
+# all_pokemon = {i:pokemon_full_list[i] for i in range(0, len(pokemon_full_list))}
 
 
 
@@ -234,18 +237,18 @@ for name in trainer_names_teams:
 
 
 # Load the Pokemon table into the db
-sql = "INSERT INTO pokemon (pokemon_id, species_name, species_type) VALUES (%s, %s, %s)"
-
-for key in all_pokemon:
-
-          #need to generate a unique name_val for each pokemon
-
-          name_val_p = key
-          other_val1= all_pokemon.get(key).split(",")[0]
-          other_val2 = all_pokemon.get(key).split("[")[1]
-
-
-          all_vals_p = (name_val_p, other_val1, other_val2 )
+# sql = "INSERT INTO pokemon (pokemon_id, species_name, species_type) VALUES (%s, %s, %s)"
+#
+# for key in all_pokemon:
+#
+#           #need to generate a unique name_val for each pokemon
+#
+#           name_val_p = key
+#           other_val1= all_pokemon.get(key).split(",")[0]
+#           other_val2 = all_pokemon.get(key).split("[")[1]
+#
+#
+#           all_vals_p = (name_val_p, other_val1, other_val2 )
 
 
           #mycursor.execute(sql, all_vals_p)
@@ -397,4 +400,67 @@ for value in pokemon_can_gmax:
 #insert the pokemon datafram into a table
 df_all_pokemon.to_sql("all_pokemon", engine, if_exists="replace")
 
+
+#get info for has_move
+moves_ids_list = []
+
+
+pokemon_with_move = 0
+for item in pokemon_list_moves:
+
+    name_count = str(item).count("name")
+
+    if name_count == 4:
+        moves_ids_list.append(pokemon_with_move)
+        moves_ids_list.append(pokemon_with_move)
+        moves_ids_list.append(pokemon_with_move)
+        moves_ids_list.append(pokemon_with_move)
+
+        pokemon_with_move = pokemon_with_move + 1
+
+    if name_count == 3:
+        moves_ids_list.append(pokemon_with_move)
+        moves_ids_list.append(pokemon_with_move)
+        moves_ids_list.append(pokemon_with_move)
+
+        pokemon_with_move = pokemon_with_move + 1
+
+
+single_move = []
+
+for item in pokemon_list_moves:
+    single_move.append(str(item).split("}")[1])
+
+for move in single_move:
+    print(move)
+
+
+
+
+#make dataframe for HasMove
+data_list_hasMove = []
+for item in moves_ids_list:
+
+    frame_row = [item, "0"]
+
+
+
+    data_list_hasMove.append(frame_row)
+
+df_hasMove = pd.DataFrame(data_list_hasMove, columns=['pokemon_id', 'move_name'])
+
+
+# updating the moves
+i = 0
+for single in single_move:
+
+
+    df_hasMove.at[i, "move_name"] = single
+    i = i + 1
+
+
+print(df_hasMove)
+
+#insert the pokemon datafram into a table
+df_hasMove.to_sql("has_move", engine, if_exists="replace")
 
