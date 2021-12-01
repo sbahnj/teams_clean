@@ -434,13 +434,25 @@ for item in str(pokemon_list_moves).split("}"):
     single_move_clean3 = single_move_clean2.replace("{name:", "")
 
     regex2 = "(.*),type:"
+    regex3 = "([A-Z, a-z]*)"
 
     match = re.match(regex2, single_move_clean3)
+
 
     if match:
 
         single_move_clean4 = match.group(1)
-        single_move.append(single_move_clean4)
+        single_move_clean5 = single_move_clean4.replace(":", "")
+        single_move_clean6 = single_move_clean5.replace(",", "")
+        single_move_clean7 = single_move_clean6.replace("[", "")
+        single_move_clean8 = single_move_clean7.replace("]", "")
+        single_move_clean9 = single_move_clean8.replace("'", "")
+
+        single_move.append(single_move_clean9)
+
+
+
+
 
 
 
