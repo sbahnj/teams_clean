@@ -429,7 +429,13 @@ for item in pokemon_list_moves:
 single_move = []
 l = 0
 for item in str(pokemon_list_moves).split("}"):
-    single_move.append(item)
+    single_move_clean = str(item).replace("]]", "")
+    single_move_clean2 = single_move_clean.replace("\"", "")
+    single_move_clean3 = single_move_clean2.replace("{name:", "")
+
+
+
+    single_move.append(single_move_clean3)
 
 
 
