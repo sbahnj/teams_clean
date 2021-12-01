@@ -427,13 +427,9 @@ for item in pokemon_list_moves:
 
 
 single_move = []
-
-for item in pokemon_list_moves:
-    single_move.append(str(item).split("}")[1])
-
-for move in single_move:
-    print(move)
-
+l = 0
+for item in str(pokemon_list_moves).split("}"):
+    single_move.append(item)
 
 
 
