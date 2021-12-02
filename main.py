@@ -10,8 +10,599 @@ from bs4 import BeautifulSoup
 pd.set_option('display.max_columns', None)
 
 from sqlalchemy import create_engine
-engine = create_engine("mysql://"+"root"+":"+"Colormewild1!"+"@"+"localhost"+"/"+"team")
+engine = create_engine("mysql://"+"root"+":"+"Colormewild1!"+"@"+"localhost"+"/"+"pokemon_project")
 
+
+#!pip install requests
+#!pip install beautifulsoup4
+
+import re
+import requests
+from bs4 import BeautifulSoup
+
+#url = "https://www.pikalytics.com/results/pc2fin20"
+url = "https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_by_name"
+
+# def is_name_link(tag):
+#     if tag is None or tag.parentElement is None:
+#         return False
+#     print(tag)
+#     return (tag.parentElement.tagName == 'TD') and (tag.tagName == 'A')
+
+page = requests.get(url).text
+soup = BeautifulSoup(page, "html.parser")
+
+name_links = soup.find_all('a')
+name_links = [tag.attrs.get('href') for tag in name_links]
+name_links = list(filter(None, name_links))
+
+for i in range(len(name_links)):
+    match_found = re.search('\/wiki\/.*_\(Pok%C3%A9mon\)', name_links[i])
+    if match_found:
+        name_links[i] = match_found.group(0)
+    else:
+        name_links[i] = None
+
+name_links = list(filter(None, name_links))
+# print(name_links)
+# print(len(name_links))
+
+# Every entry is duplicated due to the image links
+end_of_list = name_links.index('/wiki/Zygarde_(Pok%C3%A9mon)') + 1
+name_links = name_links[:end_of_list:2]
+# Remove Pokemon not currently out in game yet
+name_links.remove('/wiki/Basculegion_(Pok%C3%A9mon)')
+name_links.remove('/wiki/Kleavor_(Pok%C3%A9mon)')
+name_links.remove('/wiki/Wyrdeer_(Pok%C3%A9mon)')
+print(name_links)
+
+#### END OF FIRST BLOCK
+
+
+import re
+import requests
+from bs4 import BeautifulSoup
+import pprint
+
+move_url = 'https://bulbapedia.bulbagarden.net/wiki/List_of_moves'
+page = requests.get(move_url).text
+soup = BeautifulSoup(page, "html.parser")
+
+all_moves = []
+rows = soup.find('table').find('table').find_all('tr')
+for row in rows[1:-1]:
+    cells = row.find_all('td')
+
+    move_name = cells[1].find('a').text
+    # Don't include Dynamax-specific moves
+    if re.match('Max .*', move_name):
+        continue
+
+    move_type = cells[2].find('span').text
+    move_category = cells[3].find('span').text
+
+    pp = re.match('([0-9]{1,3})(\*)?(\\n)?', cells[5].text)
+    move_pp = int(pp.group(1))
+
+    power = re.match('([0-9]{1,3})(\*)?(\\n)?', cells[6].text)
+    move_power = int(power.group(1)) if power else None
+
+    acc = re.match('([0-9]{1,3})%', cells[7].text)
+    move_accuracy = int(acc.group(1)) if acc else None
+
+    all_moves.append([move_name, move_type, move_category, move_pp, move_power, move_accuracy])
+
+
+### END OF SECOND BLOCK
+
+
+import re
+import requests
+import pprint as pp
+from bs4 import BeautifulSoup
+
+# test_url = 'https://bulbapedia.bulbagarden.net/wiki/Calyrex_(Pok%C3%A9mon)'
+# test_url = 'https://bulbapedia.bulbagarden.net/wiki/Togetic_(Pok%C3%A9mon)'
+# test_url = 'https://bulbapedia.bulbagarden.net/wiki/Whirlipede_(Pok%C3%A9mon)'
+# test_url = 'https://bulbapedia.bulbagarden.net/wiki/Chinchou_(Pok%C3%A9mon)'
+
+roman_num = {'I': 1,
+             'II': 2,
+             'III': 3,
+             'IV': 4,
+             'V': 5,
+             'VI': 6,
+             'VII': 7,
+             'VIII': 8}
+
+# Start with this one since no Pokemon has it
+all_abilities = ['Cacophony']
+species_dict = {}
+learns_move = []
+# for link in ['/wiki/Rattata_(Pok%C3%A9mon)', '/wiki/Raticate_(Pok%C3%A9mon)', '/wiki/Geodude_(Pok%C3%A9mon)', '/wiki/Graveler_(Pok%C3%A9mon)', '/wiki/Golem_(Pok%C3%A9mon)', '/wiki/Grimer_(Pok%C3%A9mon)', '/wiki/Muk_(Pok%C3%A9mon)']:
+# for link in ['/wiki/Ponyta_(Pok%C3%A9mon)', '/wiki/Rapidash_(Pok%C3%A9mon)', '/wiki/Meowth_(Pok%C3%A9mon)', '/wiki/Persian_(Pok%C3%A9mon)']:
+# for link in ['/wiki/Nidoran%E2%99%82_(Pok%C3%A9mon)', '/wiki/Nidoran%E2%99%80_(Pok%C3%A9mon)', '/wiki/Farfetch%27d_(Pok%C3%A9mon)', '/wiki/Sirfetch%27d_(Pok%C3%A9mon)', '/wiki/Type:_Null_(Pok%C3%A9mon)']:
+#for link in name_links[name_links.index('/wiki/Groudon_(Pok%C3%A9mon)'):]:
+for link in name_links[600:605]:
+# for link in name_links:
+    name = re.match('\/wiki\/(.*)_\(Pok%C3%A9mon\)', link).group(1)
+    url = 'https://bulbapedia.bulbagarden.net' + link
+    page = requests.get(url).text
+    soup = BeautifulSoup(page, "html.parser")
+
+
+    # print("first url", url)
+    # -------Abilities-----------
+
+    # I think this is the only invalid case, but I'm not entirely sure, so I made it a list
+    def not_invalid(href):
+        return href not in ['/wiki/Cacophony_(Ability)']
+
+
+    # Plural vs. singular for abilit(y)(ies)
+    main_table = soup.find("span", text='Abilities').find_parent('table') if soup.find("span",
+                                                                                       text='Abilities') else soup.find(
+        "span", text='Ability').find_parent('table')
+
+    links = [tag.attrs.get('href') for tag in main_table.find_all('a', {'href': re.compile('\/wiki\/.*_\(Ability\)')})]
+    abilities = set(filter(not_invalid, links))
+    abilities = [re.match('\/wiki\/(.*)_\(Ability\)', link).group(1).replace('%27', '\'').replace('_', ' ') for link in
+                 abilities]
+
+    # -------Generation---------
+    gen = soup.find(string=re.compile('Generation ([IV]{1,4})'))
+    gen = re.search('Generation ([IV]{1,4})', gen).group(1)
+    gen = roman_num[gen]
+
+    # -------Evolution----------
+    # Pokemon who don't have the word 'evolve' as a link for some reason
+    if name not in ['Eternatus']:
+        evo_paragraph = soup.find(title='Evolution').find_parent('p').text
+        fully_evolved = False if re.search('.* evolves into .*', evo_paragraph) else True
+    else:
+        fully_evolved = True
+
+    # Build a list of all distinct names of abilities
+    for ability in abilities:
+        if ability not in all_abilities:
+            all_abilities.append(ability)
+
+    # -------Base stats---------
+    # hp = soup.find(href = '/wiki/HP').parent.findNext('div').text
+    # attack = soup.find(href = '/wiki/Stat#Attack').parent.findNext('div').text
+    # defense = soup.find(href = '/wiki/Stat#Defense').parent.findNext('div').text
+    # spAtk = soup.find(href = '/wiki/Stat#Special_Attack').parent.findNext('div').text
+    # spDef = soup.find(href = '/wiki/Stat#Special_Defense').parent.findNext('div').text
+    # speed = soup.find(href = '/wiki/Stat#Speed').parent.findNext('div').text
+
+    start = soup.find(id='Base_stats')
+    if not start:
+        start = soup.find(id='Stats')
+    start_set = start.find_all_next(href='/wiki/HP')
+    end = soup.find(id='Type_effectiveness')
+    end_set = end.find_all_previous(href='/wiki/HP')
+
+    hp_links = [link for link in start_set if link in end_set]
+
+    for i in range(len(hp_links)):
+
+        table = hp_links[i].find_parent('table')
+
+        atk_link = table.find(href='/wiki/Stat#Attack')
+        defense_link = table.find(href='/wiki/Stat#Defense')
+        sp_atk_link = table.find(href='/wiki/Stat#Special_Attack')
+        sp_def_link = table.find(href='/wiki/Stat#Special_Defense')
+        speed_link = table.find(href='/wiki/Stat#Speed')
+
+        form_name = ''
+        qualified_name = name
+        if len(hp_links) > 1:
+            form_name = table.find_previous_sibling(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']).text
+
+            # Check if Pokemon has multiple tables representing base stat
+            # changes in different generations. If so, take only the most recent
+            valid_gen_regex = 'Generation [IV]{1,4} onward'
+            matches_valid_gen_regex = re.match(valid_gen_regex, form_name)
+            invalid_gen_regex = 'Generation[s]? [IV]{1,4}(-[IV]{1,4})?'
+            matches_invalid_gen_regex = re.match(invalid_gen_regex, form_name)
+            if matches_invalid_gen_regex and not matches_valid_gen_regex:
+                continue
+            elif matches_valid_gen_regex:
+                form_name = ''
+
+            # print(name)
+
+            regex = '(.*)' + name + '(.*)'
+            xyregex = '(Mega) ' + name + ' ([XY])'
+
+            # Basically, if the form name is present in the form name anywhere,
+            # it gets removed (along with leading/trailing spaces/hyphens)
+            # These try/except blocks are to make these lines "optional"
+            try:
+                temp = re.match(xyregex, form_name)
+                form_name = temp.group(1).strip(' -') + ' ' + temp.group(2).strip(' -')
+            except:
+                pass
+
+            try:
+                form_name = re.match(regex, form_name).group(1).strip(' -')
+            except:
+                pass
+
+            try:
+                form_name = re.match(regex, form_name).group(2).strip(' -')
+            except:
+                pass
+
+            if form_name == '' or form_name.upper() == 'Base stats'.upper() or form_name == ' ':
+                form_name = ''
+                qualified_name = name
+            else:
+                qualified_name = name + ' (' + form_name + ')'
+
+        print(qualified_name)
+
+        hp = hp_links[i].parent.findNext('div').text
+        attack = atk_link.parent.findNext('div').text
+        defense = defense_link.parent.findNext('div').text
+        sp_atk = sp_atk_link.parent.findNext('div').text
+        sp_def = sp_def_link.parent.findNext('div').text
+        speed = speed_link.parent.findNext('div').text
+
+        # -------Types-------
+        # type_links = soup.find(href='/wiki/Type').find_parent('b').find_next('table').find_all(href = re.compile('\/wiki\/(.*)_\(Type\)'))
+        # type_cells = soup.find(href='/wiki/Type').find_parent('b').find_next('table').find_all(lambda tag : (tag.name == 'td') and not (tag.find('td') and not (tag.attrs['href'] == '/wiki/Unknown_(type)' if tag.attrs.get('href') else True)))
+        # print("soupsoupsoup\n", soup.find(href='/wiki/Type').find_parent(True))
+        # print("soup url", url)
+        # print(soup.find('table').find_next('table'))
+
+        # type_cells = soup.find(href='/wiki/Type').find_parent('b').find_next('table').find_all(lambda tag : (tag.name == 'td') and not tag.find(href = '/wiki/Unknown_(type)'))
+        smalls = soup.find(href='/wiki/Type').find_parent('b').find_next('table').find_all(
+            lambda tag: (tag.name == 'small') and not tag.text == '')
+        type_cells = {small.text: small.find_previous_sibling('table').find_all(
+            lambda tag: (tag.name == 'td') and not tag.find(href='/wiki/Unknown_(type)')) for small in smalls}
+        # -------
+        # print(type_cells)
+        type1 = 'N/A'
+        type2 = 'N/A'
+        # There's more than one form, so need to get the types from the right one
+        form_check_regex = '(.*)' + form_name + '(.*)'
+        print(form_name)
+        # print(form_check_regex)
+        # print(type_cells)
+        # print("len ", len(type_cells))
+        # There will always be at least one of these cells
+        # print("type cells", type_cells)
+        # Inconsistencies abound--I have to make these exceptions
+        if name == 'Zygarde':
+            type_cells['50% Forme'] = []
+        if name == 'Indeedee':
+            type1 = 'Psychic'
+            type2 = 'Normal'
+        if name == 'Aegislash':
+            type1 = 'Steel'
+            type2 = 'Ghost'
+        if name == 'Lycanroc':
+            type1 = 'Rock'
+        if name == 'Pumpkaboo':
+            type1 = 'Ghost'
+            type2 = 'Grass'
+        if not type_cells:
+            type_cells = {'pass': 'pass'}
+        for key in type_cells:
+            try:
+                # print("goes here")
+                # If there's more than one form, we need to get the types from the right one
+                # form = type_cells[j].find('small').text
+                # print("mmmmm", form)
+                # print("one")
+                if re.match(form_check_regex, key):
+                    # print("two")
+                    # type_texts = [type_cells[key][0].find('b'), type_cells[key][1].find('b')]
+                    # print("three")
+                    # Remove newline character at the end
+                    type1 = type_cells[key][0].text.split('\n')[0]
+                    # print("four")
+                    if len(type_cells[key]) == 2:
+                        # print("five")
+                        type2 = type_cells[key][1].text.split('\n')[0]
+                    break
+            # Will enter this except block when there's no form name underneath the type
+            # (There are some extra cells that get brought in from the scraping, for some reason, so
+            # this conditional is a way of dealing with that)
+            except:
+                # print("then here")
+                print("in except ", name)
+                # print("llllllllllllll", form_name)
+                # if form_name == '' or (j == len(type_cells[key]) - 1):
+                # if form_name == '':
+                # type_texts = type_cells[key][0].find('b')
+                # print("asdflkjasdflkj", type_texts)
+                temp_table = soup.find(href='/wiki/Type').find_parent('b').find_next(
+                    'table')  # .find_all(lambda tag : (tag.name == 'td') and not tag.find('td'))
+                types = list(filter(lambda _type: _type != 'Unknown', [b.text for b in temp_table.find_all('b')]))
+                type1 = types[0]
+                if len(types) == 2:
+                    type2 = types[1]
+                # break
+                # else:
+                #     continue
+
+        # -----Moves--------
+        # These Pokemon have certain forms available in Gen 8 and others not, so we'll just
+        # take a shortcut and only pull from their gen 7 learnset
+        alolan_forms = ['Rattata', 'Raticate', 'Geodude', 'Graveler', 'Golem',
+                        'Grimer', 'Muk']
+        if soup.find(text=re.compile('This Pokémon is unavailable within')) or name in alolan_forms:
+            url += '/Generation_VII_learnset'
+            print('url\n', url)
+            page = requests.get(url).text
+            soup = BeautifulSoup(page, "html.parser")
+
+        ##########################################################
+        learnset = set()
+        # TODO need to add the Pokemon here that have stat differences across generations since
+        # they have multiple tables...at least, I think that's why it happens. Might need to just run
+        # this a bunch and add anything that fails into this list...
+        pkmn_without_learnset_diffs = ['Pumpkaboo', 'Gourgeist', 'Giratina', 'Basculin',
+                                       'Landorus', 'Thundurus', 'Tornadus', 'Rotom', 'Meloetta', 'Greninja',
+                                       'Aegislash', 'Zygarde', 'Wishiwashi', 'Minior', 'Necrozma', 'Eiscue', 'Zacian',
+                                       'Zamazenta',
+                                       'Eternatus', 'Kyogre', 'Groudon', 'Qwilfish', 'Pikachu', 'Gardevoir',
+                                       'Kangaskhan', 'Venusaur',
+                                       'Charizard', 'Blastoise', 'Alakazam', 'Gengar', 'Pinsir', 'Gyarados',
+                                       'Aerodactyl', 'Mewtwo',
+                                       'Ampharos', 'Scizor', 'Heracross', 'Houndoom', 'Tyranitar', 'Blaziken', 'Mawile',
+                                       'Aggron',
+                                       'Medicham', 'Manectric', 'Banette', 'Absol', 'Latias', 'Latios', 'Garchomp',
+                                       'Lucario', 'Abomasnow',
+                                       'Beedrill', 'Pidgeot', 'Slowbro', 'Steelix', 'Sceptile', 'Swampert', 'Sableye',
+                                       'Sharpedo', 'Camerupt',
+                                       'Altaria', 'Glalie', 'Salamence', 'Metagross', 'Rayquaza', 'Lopunny', 'Gallade',
+                                       'Audino', 'Diancie', 'Psyduck',
+                                       'Roserade', 'Scolipede', 'Seismitoad', 'Solrock', 'Stoutland', 'Vileplume',
+                                       'Wigglytuff', 'Azumarill',
+                                       'Beartic', 'Bellossom', 'Butterfree', 'Clefable', 'Crustle', 'Cryogonal',
+                                       'Darmanitan', 'Eevee',
+                                       'Exploud', 'Gigalith', 'Jumpluff', 'Krookodile', 'Lunatone', 'Mantine', 'Minior',
+                                       'Nidoking', 'Nidoqueen',
+                                       'Noctowl', 'Pelipper', 'Poliwrath', 'Illumise', 'Arbok', 'Ariados', 'Beautifly',
+                                       'Chimecho', 'Delcatty',
+                                       'Dodrio', 'Electrode', 'Magcargo', 'Shaymin', 'Volbeat', 'Kyurem', 'Leavanny',
+                                       'Masquerain', 'Staraptor',
+                                       'Swellow', 'Unfezant', 'Victreebel', 'Woobat', 'Unown']
+        if len(hp_links) > 1 and name not in pkmn_without_learnset_diffs:
+            # Level up
+            form_cursor = soup.find(id='Learnset')
+            if not form_cursor:
+                form_cursor = soup.find(id='By_leveling_up')
+            temp = form_cursor.find_next(text=(form_name + ' ' + name if form_name != '' else name))
+            # print("temp ", temp)
+            if not temp:
+                # print("not temp\n")
+                temp = form_cursor.find_next(text=form_name)
+            form_cursor = temp
+
+            table_rows = form_cursor.find_next('table').find('tr').find_next_sibling('tr').find_all('tr')
+            # print("form cursor\n", form_cursor)
+            # print("table rows\n", table_rows)
+            for row in table_rows[1:]:
+                move_name = row.find_all('td')[1].find('a').text
+                learnset.add(move_name)
+
+            try:
+                # TM/TR
+                temp = form_cursor.find_next('span', text=(form_name + ' ' + name if form_name != '' else name))
+                if not temp:
+                    temp = form_cursor.find_next('span', text=form_name)
+                form_cursor = temp
+                # print('in TM: ', form_name, 'form_cursor: ', form_cursor)
+                table_rows = form_cursor.find_next('table').find('tr').find_next_sibling('tr').find_all('tr')
+                for row in table_rows[1:]:
+                    move_name = row.find_all('td')[2].find('a').text
+                    learnset.add(move_name)
+            except:
+                pass
+
+            try:
+                # Breeding
+                temp = form_cursor.find_next('span', text=(form_name + ' ' + name if form_name != '' else name))
+                if not temp:
+                    temp = form_cursor.find_next('span', text=form_name)
+                form_cursor = temp
+                table_rows = form_cursor.find_next('table').find('tr').find_next_sibling('tr').find_all('tr')
+                for row in table_rows[1:]:
+                    move_name = row.find_all('td')[1].find('a').text
+                    learnset.add(move_name)
+            except:
+                pass
+
+            try:
+                # Tutoring
+                temp = form_cursor.find_next('span', text=(form_name + ' ' + name if form_name != '' else name))
+                if not temp:
+                    temp = form_cursor.find_next('span', text=form_name)
+                form_cursor = temp
+                table_rows = form_cursor.find_next('table').find('tr').find_next_sibling('tr').find_all('tr')
+                for row in table_rows[1:]:
+                    move_name = row.find_all('td')[0].find('a').text
+                    learnset.add(move_name)
+            except:
+                pass
+
+            try:
+                # Form Change
+                temp = form_cursor.find_next('span', text=(form_name + ' ' + name if form_name != '' else name))
+                if not temp:
+                    temp = form_cursor.find_next('span', text=form_name)
+                form_cursor = temp
+                table_rows = form_cursor.find_next('table').find('tr').find_next_sibling('tr').find_all('tr')
+                for row in table_rows[1:]:
+                    move_name = row.find_all('td')[1].find('a').text
+                    learnset.add(move_name)
+            except:
+                pass
+
+            new_learnset = set()
+            # print('all moves\n', all_moves)
+            for move in learnset:
+                # Get rid of extraneous strings from the learnset
+                # (sometimes things like type names would end up in it for some reason)
+                # print(move)
+                if move in [move[0] for move in all_moves]:
+                    new_learnset.add(move)
+            # print("new learnset\n")
+            # pp.pprint(new_learnset)
+            learnset = new_learnset
+
+        # Pokemon has no form differences
+        else:
+            start = soup.find(id='Learnset')
+            if not start:
+                start = soup.find(id='By_leveling_up')
+            end = soup.find(id='TCG-only_moves')
+            if not end:
+                end = soup.find(id='Anime-only_moves')
+            if not end:
+                end = soup.find(id='Side_game_data')
+            if not end:
+                end = soup.find(title='Special:Categories')
+            # print('end: ', end)
+            # links = start.find_all_next('a')
+            start_set = start.find_all_next('a')
+            end_set = end.find_all_previous('a')
+
+            links = [linkx for linkx in start_set if linkx in end_set]
+
+            # print("links\n", links)
+            for move in all_moves:
+                for linky in links:
+                    if linky.text == move[0]:
+                        learnset.add(move[0])
+
+        if name == 'Unown':
+            learnset = set({'Hidden Power'})
+
+        # Name fixes for special symbols
+        if name == 'Nidoran%E2%99%82':
+            name = 'Nidoran'
+            qualified_name = 'Nidoran (Male)'
+        if name == 'Nidoran%E2%99%80':
+            name = 'Nidoran'
+            qualified_name = 'Nidoran (Female)'
+        if name == 'Farfetch%27d':
+            name = 'Farfetch\'d'
+            qualified_name = 'Farfetch\'d (Galarian)' if form_name != '' else 'Farfetch\'d'
+        if name == 'Sirfetch%27d':
+            name = 'Sirfetch\'d'
+            qualified_name = name
+        if name == 'Type:_Null':
+            name = 'Type: Null'
+            qualified_name = name
+
+        for move in learnset:
+            learns_move.append([qualified_name, move])
+
+        pp.pprint(learnset)
+        # print(learns_move)
+
+        if form_name == 'Alolan':
+            gen = 7
+        elif form_name == 'Galarian':
+            gen = 8
+        elif qualified_name == 'Rotom (Heat, Wash, Frost, Fan, and Mow)':
+            # It's a lot easier/faster just to hard-code these than split up the string and grab all the form names with regex
+            species_dict['Rotom-Heat'] = ['Electric', 'Fire', hp, attack, defense, sp_atk, sp_def, speed, abilities,
+                                          gen, fully_evolved]
+            species_dict['Rotom-Wash'] = ['Electric', 'Water', hp, attack, defense, sp_atk, sp_def, speed, abilities,
+                                          gen, fully_evolved]
+            species_dict['Rotom-Frost'] = ['Electric', 'Ice', hp, attack, defense, sp_atk, sp_def, speed, abilities,
+                                           gen, fully_evolved]
+            species_dict['Rotom-Fan'] = ['Electric', 'Flying', hp, attack, defense, sp_atk, sp_def, speed, abilities,
+                                         gen, fully_evolved]
+            species_dict['Rotom-Mow'] = ['Electric', 'Grass', hp, attack, defense, sp_atk, sp_def, speed, abilities,
+                                         gen, fully_evolved]
+            continue
+
+        species_dict[qualified_name] = [type1, type2, hp, attack, defense, sp_atk, sp_def, speed, abilities, gen,
+                                        fully_evolved]
+
+        # print(f'form name: {form_name}\n')
+        # print(f'qualified name: {qualified_name}\n')
+        # print(f'HP: {hp}\nAtk: {attack}\nDef: {defense}\nSpAtk: {sp_atk}\nSpDef: {sp_def}\nSpeed: {speed}\n')
+
+        # If the url changed due to going to a different (learnset) page, change it back on new iteration
+        print("link\n", link)
+        url = 'https://bulbapedia.bulbagarden.net' + link
+        page = requests.get(url).text
+        soup = BeautifulSoup(page, "html.parser")
+
+    # print(name)
+    # print(gen)
+    # print("Fully evolved: " + str(fully_evolved))
+    # print(abilities)
+    # print("HP: " + hp + "\n" + "Atk: " + attack + "\n" + "Def: " + defense + "\n" + "SpAtk: " + spAtk + "\n" + "SpDef: " + spDef + "\n" + "Speed: " + speed + "\n")
+
+pp.pprint(species_dict)
+print(sorted(all_abilities))
+
+# TODO check these
+# for species in species_dict:
+#     type1 = species_dict[species][0]
+#     type2 = species_dict[species][1]
+#     if type1 == 'N/A' and type2 == 'N/A':
+#         print("typeless: ", name)
+
+# TODO write these to tables:
+# all_abilities
+# all_moves
+# learns_move
+# species_dict -- need to unwind/normalize this because of the abilities list
+# TODO make a new list called has_ability?
+
+# TODO I don't think it's possible to programmatically separate out the abilities for the different forms due to
+# how they're notated in different ways for the different species--update: might be able to do the same thing
+# I do for types to do this
+
+
+# TODO it looks like we'll have to do some rule-checking for each Pokemon that we find on Pikalytics
+# Example: find Landorus--check if it's in dict of Pokemon with form differences--if so (yes),
+# get function stored as value in dict, pass in all details of the Pokemon to function--
+# function should return the form name (or entire name with form included)
+
+# TODO note: there is at least one case where the ability is misspelled on Pikalytics--Alolan Raichu's
+# "Surge Surfer" became "Surge Surger"--need to catch those--also, this is the condition for Alolan Raichu
+
+### END OF THIRD BLOCK
+
+
+import pandas as pd
+# TODO remember that Aegislash is split into two entries, so need to account for that in the SQL queries
+#print(species_dict)
+has_ability = []
+for species in species_dict:
+    species_abilities = species_dict[species].pop(8)
+    #print(species_abilities)
+    for sp_ability in species_abilities:
+        has_ability.append([species, sp_ability])
+
+has_ability_df = pd.DataFrame(has_ability, columns=["Pokemon", "Ability"])
+#has_ability_df
+
+species_df = pd.DataFrame.from_dict(species_dict, orient='index', columns=["Type1", "Type2", "HP", "Attack", "Defense", "Special Attack", "Special Defense", "Speed", "Gen", "Fully Evolved"])
+#species_df
+
+learns_move_df = pd.DataFrame(learns_move, columns=["Pokemon", "Move"])
+#learns_move_df
+
+moves_df = pd.DataFrame(all_moves, columns=["Name", "Type", "Category", "PP", "Power", "Accuracy"])
+#moves_df
+
+abilities_df = pd.DataFrame(all_abilities, columns=["Name"])
+
+
+
+# END OF FOURTH BLOCK
 
 
 # Connection info for the database
@@ -23,7 +614,7 @@ mydb = mysql.connector.connect(
          ## Should do the password-hiding thing shown in the slides (??)
          password="Colormewild1!",
 
-         database="team"
+         database="pokemon_project"
 
      )
 
@@ -490,7 +1081,7 @@ for single in single_move:
 #print(df_hasMove)
 
 #insert the pokemon datafram into a table
-df_hasMove.to_sql("has_move", engine, if_exists="replace")
+#df_hasMove.to_sql("has_move", engine, if_exists="replace")
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -576,4 +1167,19 @@ for index, row in df_all_pokemon.iterrows():
         df_all_pokemon.at[index, "species_name"] = name + ' (Mega)' if re.match("(.*)ite(.*)", item) else name
 
 #insert the pokemon datafram into a table
-df_all_pokemon.to_sql("all_pokemon", engine, if_exists="replace")
+print(df_all_pokemon)
+df_all_pokemon.to_sql("pokemon", engine, if_exists="append", index=False)
+
+
+abilities_df.to_sql("abilities", engine, if_exists="append", index=False)
+
+#insert the has_ability_df
+has_ability_df.to_sql("has_ability", engine, if_exists="append",index=False)
+
+species_df.to_sql("species", engine, if_exists="append", index=False)
+
+moves_df.to_sql("moves", engine, if_exists="append", index=False)
+
+learns_move_df.to_sql("learns_move", engine, if_exists="append", index=False)
+
+df_hasMove.to_sql("has_move", engine, if_exists="append", index=False)
