@@ -90,7 +90,10 @@ for row in rows[1:-1]:
     acc = re.match('([0-9]{1,3})%', cells[7].text)
     move_accuracy = int(acc.group(1)) if acc else None
 
-    all_moves.append([move_name, move_type, move_category, move_pp, move_power, move_accuracy])
+    if len(all_moves) > 0 and all_moves[-1][0] == move_name:
+        all_moves.pop(-1)
+    else:
+        all_moves.append([move_name, move_type, move_category, move_pp, move_power, move_accuracy])
 
 
 ### END OF SECOND BLOCK
@@ -496,8 +499,12 @@ for link in ['/wiki/Kyogre_(Pok%C3%A9mon)', '/wiki/Rillaboom_(Pok%C3%A9mon)', '/
         if name == 'Sirfetch%27d':
             name = 'Sirfetch\'d'
             qualified_name = name
-        if name == 'Type:_Null':
-            name = 'Type: Null'
+        # if name == 'Type:_Null':
+        #     name = 'Type: Null'
+        #     qualified_name = name
+        space_name = re.match("(.*)_(.*)", name)
+        if space_name:
+            name = space_name.group(1) + " " + space_name.group(2)
             qualified_name = name
 
         for move in learnset:
@@ -691,7 +698,6 @@ for item in str(pokemon_list).split(":"):
         no_comma = no_quotation.title().replace(",", "")
 
         no_nums = no_comma.replace("%20", " ")
-        no_nums = no_nums.replace("_", " ")
 
         pokemon_list_names.append(no_nums)
 
@@ -1129,6 +1135,7 @@ form_checker = {
                      item: "Raichu (Alolan)" if ability == "Surge Surfer" or ability == "Surge Surger" else "Raichu",
     "Persian": lambda name, ability, moves,
                       item: "Persian (Alolan)" if ability == "Fur Coat" or ability == "Rattled" else "Persian",
+    "Indeedee": lambda name, ability, moves, item: "Indeedee (Female)"
 
 }
 # assuming that there's a dict called poke_dict holding all the individual Pokemon that maps pokemon_id : [attributes]
@@ -1167,7 +1174,7 @@ for index, row in df_all_pokemon.iterrows():
         df_all_pokemon.at[index, "species_name"] = form_checker[name](name, ability, moves, item)
     else:
         # If Pokemon is holding a mega stone, treat it as its mega form
-        df_all_pokemon.at[index, "species_name"] = name + ' (Mega)' if re.match("(.*)ite(.*)", item) else name
+        df_all_pokemon.at[index, "species_name"] = name + ' (Mega)' if re.match("^(?!([Ee]violite)$).*ite$", item) else name
 
 
 
