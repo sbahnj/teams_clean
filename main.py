@@ -120,7 +120,7 @@ all_abilities = ['Cacophony']
 species_dict = {}
 learns_move = []
 # for link in ['/wiki/Rattata_(Pok%C3%A9mon)', '/wiki/Raticate_(Pok%C3%A9mon)', '/wiki/Geodude_(Pok%C3%A9mon)', '/wiki/Graveler_(Pok%C3%A9mon)', '/wiki/Golem_(Pok%C3%A9mon)', '/wiki/Grimer_(Pok%C3%A9mon)', '/wiki/Muk_(Pok%C3%A9mon)']:
-for link in ['/wiki/Kyogre_(Pok%C3%A9mon)', '/wiki/Rillaboom_(Pok%C3%A9mon)', '/wiki/Tornadus_(Pok%C3%A9mon)', '/wiki/Tsareena_(Pok%C3%A9mon)']:
+for link in ['/wiki/Kyogre_(Pok%C3%A9mon)', '/wiki/Rillaboom_(Pok%C3%A9mon)', '/wiki/Tornadus_(Pok%C3%A9mon)', '/wiki/Tsareena_(Pok%C3%A9mon)', '/wiki/Urshifu_(Pok%C3%A9mon)', '/wiki/Weavile_(Pok%C3%A9mon)', '/wiki/Arcanine_(Pok%C3%A9mon)', '/wiki/Calyrex_(Pok%C3%A9mon)', '/wiki/Indeedee_(Pok%C3%A9mon)', '/wiki/Mienshao_(Pok%C3%A9mon)', '/wiki/Stakataka_(Pok%C3%A9mon)', '/wiki/Whimsicott_(Pok%C3%A9mon)', '/wiki/Amoonguss_(Pok%C3%A9mon)', '/wiki/Incineroar_(Pok%C3%A9mon)', '/wiki/Volcarona_(Pok%C3%A9mon)', '/wiki/Xerneas_(Pok%C3%A9mon)', '/wiki/Nihilego_(Pok%C3%A9mon)', '/wiki/Regieleki_(Pok%C3%A9mon)', '/wiki/Cherrim_(Pok%C3%A9mon)', '/wiki/Dusclops_(Pok%C3%A9mon)', '/wiki/Entei_(Pok%C3%A9mon)', '/wiki/Groudon_(Pok%C3%A9mon)', '/wiki/Zapdos_(Pok%C3%A9mon)', '/wiki/Grimmsnarl_(Pok%C3%A9mon)', '/wiki/Zacian_(Pok%C3%A9mon)', '/wiki/Dragonite_(Pok%C3%A9mon)', '/wiki/Krookodile_(Pok%C3%A9mon)', '/wiki/Torkoal_(Pok%C3%A9mon)', '/wiki/Landorus_(Pok%C3%A9mon)', '/wiki/Tapu_Fini_(Pok%C3%A9mon)']:
 # for link in ['/wiki/Nidoran%E2%99%82_(Pok%C3%A9mon)', '/wiki/Nidoran%E2%99%80_(Pok%C3%A9mon)', '/wiki/Farfetch%27d_(Pok%C3%A9mon)', '/wiki/Sirfetch%27d_(Pok%C3%A9mon)', '/wiki/Type:_Null_(Pok%C3%A9mon)']:
 #for link in name_links[name_links.index('/wiki/Groudon_(Pok%C3%A9mon)'):]:
 #for link in name_links[600:605]:
@@ -687,9 +687,11 @@ for item in str(pokemon_list).split(":"):
         name_string = str(item.replace("\"nature\"", ""))
 
         no_quotation = name_string.replace("\"", "")
-        no_comma = no_quotation.capitalize().replace(",", "")
+        # no_comma = no_quotation.capitalize().replace(",", "")
+        no_comma = no_quotation.title().replace(",", "")
 
         no_nums = no_comma.replace("%20", " ")
+        no_nums = no_nums.replace("_", " ")
 
         pokemon_list_names.append(no_nums)
 
@@ -742,7 +744,7 @@ for name in pokemon_list_names:
 
     boolean = False
 
-    regex = "(.*)-gmax"
+    regex = "(.*)-[Gg]max"
 
     match = re.match(regex, name)
 
@@ -1091,14 +1093,14 @@ form_checker = {
     "Aegislash": lambda name, ability, moves, item: "Aegislash (Shield Forme)",
     "Groudon": lambda name, ability, moves, item: "Groudon (Primal)" if item == "Red Orb" else "Groudon",
     "Kyogre": lambda name, ability, moves, item: "Kyogre (Primal)" if item == "Blue Orb" else "Kyogre",
-    "Giratina": lambda name, ability, moves, item: "Giratina (Origin Forme)" if item == "Griseous Orb" else "Giratina",
+    "Giratina": lambda name, ability, moves, item: "Giratina (Origin Forme)" if item == "Griseous Orb" else "Giratina (Altered Forme)",
     "Giratina-Origin": lambda name, ability, moves, item: "Giratina (Origin Forme)",
     "Landorus": lambda name, ability, moves,
-                       item: "Landorus (Therian Forme)" if ability == "Intimidate" else "Landorus",
+                       item: "Landorus (Therian Forme)" if ability == "Intimidate" else "Landorus (Incarnate Forme)",
     "Thundurus": lambda name, ability, moves,
-                        item: "Thundurus (Therian Forme)" if ability == "Volt Absorb" else "Thundurus",
+                        item: "Thundurus (Therian Forme)" if ability == "Volt Absorb" else "Thundurus (Incarnate Forme)",
     "Tornadus": lambda name, ability, moves,
-                       item: "Tornadus (Therian Forme)" if ability == "Regenerator" else "Tornadus",
+                       item: "Tornadus (Therian Forme)" if ability == "Regenerator" else "Tornadus (Incarnate Forme)",
     "Kyurem": lambda name, ability, moves, item: "Kyurem (White)" if ability == "Turboblaze" else (
         "Kyurem (Black)" if ability == "Teravolt" else "Kyurem"),
     "Kyurem-White": lambda name, ability, moves, item: "Kyurem (White)",
@@ -1181,21 +1183,20 @@ print(learns_move_df)
 print("all pokemon df:")
 print(df_all_pokemon)
 
+abilities_df.to_sql("ability", engine, if_exists="append", index=False)
+
+moves_df.to_sql("move", engine, if_exists="append", index=False)
+
 #insert the pokemon datafram into a table
-species_df.to_sql("species", engine, if_exists="append", index=False)
-
-print(df_all_pokemon)
-df_all_pokemon.to_sql("pokemon", engine, if_exists="append", index=False, chunksize=4)
-
-
-abilities_df.to_sql("abilities", engine, if_exists="append", index=False)
+species_df.to_sql("species", engine, if_exists="append")
 
 #insert the has_ability_df
 has_ability_df.to_sql("has_ability", engine, if_exists="append",index=False)
 
-moves_df.to_sql("moves", engine, if_exists="append", index=False)
-
 learns_move_df.to_sql("learns_move", engine, if_exists="append", index=False)
+
+print(df_all_pokemon)
+df_all_pokemon.to_sql("pokemon", engine, if_exists="append", index=False, chunksize=4)
 
 df_hasMove.to_sql("has_move", engine, if_exists="append", index=False)
 
