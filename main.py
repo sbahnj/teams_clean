@@ -123,11 +123,11 @@ all_abilities = ['Cacophony']
 species_dict = {}
 learns_move = []
 # for link in ['/wiki/Rattata_(Pok%C3%A9mon)', '/wiki/Raticate_(Pok%C3%A9mon)', '/wiki/Geodude_(Pok%C3%A9mon)', '/wiki/Graveler_(Pok%C3%A9mon)', '/wiki/Golem_(Pok%C3%A9mon)', '/wiki/Grimer_(Pok%C3%A9mon)', '/wiki/Muk_(Pok%C3%A9mon)']:
-for link in ['/wiki/Kyogre_(Pok%C3%A9mon)', '/wiki/Rillaboom_(Pok%C3%A9mon)', '/wiki/Tornadus_(Pok%C3%A9mon)', '/wiki/Tsareena_(Pok%C3%A9mon)', '/wiki/Urshifu_(Pok%C3%A9mon)', '/wiki/Weavile_(Pok%C3%A9mon)', '/wiki/Arcanine_(Pok%C3%A9mon)', '/wiki/Calyrex_(Pok%C3%A9mon)', '/wiki/Indeedee_(Pok%C3%A9mon)', '/wiki/Mienshao_(Pok%C3%A9mon)', '/wiki/Stakataka_(Pok%C3%A9mon)', '/wiki/Whimsicott_(Pok%C3%A9mon)', '/wiki/Amoonguss_(Pok%C3%A9mon)', '/wiki/Incineroar_(Pok%C3%A9mon)', '/wiki/Volcarona_(Pok%C3%A9mon)', '/wiki/Xerneas_(Pok%C3%A9mon)', '/wiki/Nihilego_(Pok%C3%A9mon)', '/wiki/Regieleki_(Pok%C3%A9mon)', '/wiki/Cherrim_(Pok%C3%A9mon)', '/wiki/Dusclops_(Pok%C3%A9mon)', '/wiki/Entei_(Pok%C3%A9mon)', '/wiki/Groudon_(Pok%C3%A9mon)', '/wiki/Zapdos_(Pok%C3%A9mon)', '/wiki/Grimmsnarl_(Pok%C3%A9mon)', '/wiki/Zacian_(Pok%C3%A9mon)', '/wiki/Dragonite_(Pok%C3%A9mon)', '/wiki/Krookodile_(Pok%C3%A9mon)', '/wiki/Torkoal_(Pok%C3%A9mon)', '/wiki/Landorus_(Pok%C3%A9mon)', '/wiki/Tapu_Fini_(Pok%C3%A9mon)']:
+#for link in ['/wiki/Kyogre_(Pok%C3%A9mon)', '/wiki/Rillaboom_(Pok%C3%A9mon)', '/wiki/Tornadus_(Pok%C3%A9mon)', '/wiki/Tsareena_(Pok%C3%A9mon)', '/wiki/Urshifu_(Pok%C3%A9mon)', '/wiki/Weavile_(Pok%C3%A9mon)', '/wiki/Arcanine_(Pok%C3%A9mon)', '/wiki/Calyrex_(Pok%C3%A9mon)', '/wiki/Indeedee_(Pok%C3%A9mon)', '/wiki/Mienshao_(Pok%C3%A9mon)', '/wiki/Stakataka_(Pok%C3%A9mon)', '/wiki/Whimsicott_(Pok%C3%A9mon)', '/wiki/Amoonguss_(Pok%C3%A9mon)', '/wiki/Incineroar_(Pok%C3%A9mon)', '/wiki/Volcarona_(Pok%C3%A9mon)', '/wiki/Xerneas_(Pok%C3%A9mon)', '/wiki/Nihilego_(Pok%C3%A9mon)', '/wiki/Regieleki_(Pok%C3%A9mon)', '/wiki/Cherrim_(Pok%C3%A9mon)', '/wiki/Dusclops_(Pok%C3%A9mon)', '/wiki/Entei_(Pok%C3%A9mon)', '/wiki/Groudon_(Pok%C3%A9mon)', '/wiki/Zapdos_(Pok%C3%A9mon)', '/wiki/Grimmsnarl_(Pok%C3%A9mon)', '/wiki/Zacian_(Pok%C3%A9mon)', '/wiki/Dragonite_(Pok%C3%A9mon)', '/wiki/Krookodile_(Pok%C3%A9mon)', '/wiki/Torkoal_(Pok%C3%A9mon)', '/wiki/Landorus_(Pok%C3%A9mon)', '/wiki/Tapu_Fini_(Pok%C3%A9mon)']:
 # for link in ['/wiki/Nidoran%E2%99%82_(Pok%C3%A9mon)', '/wiki/Nidoran%E2%99%80_(Pok%C3%A9mon)', '/wiki/Farfetch%27d_(Pok%C3%A9mon)', '/wiki/Sirfetch%27d_(Pok%C3%A9mon)', '/wiki/Type:_Null_(Pok%C3%A9mon)']:
 #for link in name_links[name_links.index('/wiki/Groudon_(Pok%C3%A9mon)'):]:
 #for link in name_links[600:605]:
-# for link in name_links:
+for link in name_links:
     name = re.match('\/wiki\/(.*)_\(Pok%C3%A9mon\)', link).group(1)
     url = 'https://bulbapedia.bulbagarden.net' + link
     page = requests.get(url).text
@@ -941,7 +941,7 @@ for team_id in team_ids:
 
 
 # insert the dataframe into a table
-#df.to_sql("individual_pokemon", engine, if_exists="replace")
+df.to_sql("team_members", engine, if_exists="replace")
 
 
 # make the pokemon dict into a dataframe
@@ -1190,6 +1190,332 @@ print(learns_move_df)
 print("all pokemon df:")
 print(df_all_pokemon)
 
+
+#%%%%%%%%%%%%%%%%% Getting info for Trainer, Tournament, Competes, Team
+
+trainer_names = []
+trainer_nationalities = []
+trainer_dictionary = {}
+
+# Getting the names and nationalities from pages formatted like "trainer name (trainer nationality)"
+
+#from 2018 - 2021
+urls_with_nationalities = ["https://www.pikalytics.com/results/worlds18m", "https://www.pikalytics.com/results/worlds18s",
+                           "https://www.pikalytics.com/results/worlds18j", "https://www.pikalytics.com/results/naint18m",
+                           "https://www.pikalytics.com/results/naint18s", "https://www.pikalytics.com/results/naint18j",
+                           "https://www.pikalytics.com/results/latamint18m", "https://www.pikalytics.com/results/latamint18s",
+                           "https://www.pikalytics.com/results/latamint18j", "https://www.pikalytics.com/results/oceareg18m",
+                           "https://www.pikalytics.com/results/oceareg18s", "https://www.pikalytics.com/results/oceareg18j",
+                           "https://www.pikalytics.com/results/naint19m", "https://www.pikalytics.com/results/naint19s",
+                           "https://www.pikalytics.com/results/naint19j", "https://www.pikalytics.com/results/euint19m",
+                           "https://www.pikalytics.com/results/euint19s", "https://www.pikalytics.com/results/euint19j",
+                           "https://www.pikalytics.com/results/oceania19m", "https://www.pikalytics.com/results/oceania19s",
+                           "https://www.pikalytics.com/results/oceania19j", "https://www.pikalytics.com/results/latamint19m",
+                           "https://www.pikalytics.com/results/latamint19s", "https://www.pikalytics.com/results/latamint19j",
+                           "https://www.pikalytics.com/results/pc2fin20", "https://www.pikalytics.com/results/pc2reg20",
+                           "https://www.pikalytics.com/results/pcfin20", "https://www.pikalytics.com/results/oceania20m",
+                           "https://www.pikalytics.com/results/oceania20s", "https://www.pikalytics.com/results/oceania20j",
+                           "https://www.pikalytics.com/results/pc25inv21", "https://www.pikalytics.com/results/pc4fin21",
+                           "https://www.pikalytics.com/results/pc4reg21", "https://www.pikalytics.com/results/pc3fin21",
+                           "https://www.pikalytics.com/results/pc3reg21"]
+
+
+#from 2018 - 2021
+urls_without_nationalities = ["https://www.pikalytics.com/results/shefreg18m", "https://www.pikalytics.com/results/madreg18m",
+                              "https://www.pikalytics.com/results/roanreg18m", "https://www.pikalytics.com/results/torreg18m",
+                              "https://www.pikalytics.com/results/saltreg18m", "https://www.pikalytics.com/results/sindreg18m",
+                              "https://www.pikalytics.com/results/portreg18m", "https://www.pikalytics.com/results/charreg18m",
+                              "https://www.pikalytics.com/results/colinreg18m", "https://www.pikalytics.com/results/malmoreg18m",
+                              "https://www.pikalytics.com/results/leipreg18m", "https://www.pikalytics.com/results/leipreg18s",
+                              "https://www.pikalytics.com/results/leipreg18j", "https://www.pikalytics.com/results/dalreg18m",
+                              "https://www.pikalytics.com/results/dalreg18s", "https://www.pikalytics.com/results/dalreg18j",
+                              "https://www.pikalytics.com/results/madisonreg19m", "https://www.pikalytics.com/results/madisonreg19s",
+                              "https://www.pikalytics.com/results/madisonreg19j", "https://www.pikalytics.com/results/santareg19m",
+                              "https://www.pikalytics.com/results/santareg19s", "https://www.pikalytics.com/results/santareg19j",
+                              "https://www.pikalytics.com/results/bristreg19m", "https://www.pikalytics.com/results/bristreg19s",
+                              "https://www.pikalytics.com/results/bristreg19j", "https://www.pikalytics.com/results/hartreg19m",
+                              "https://www.pikalytics.com/results/hartreg19s", "https://www.pikalytics.com/results/hartreg19j",
+                              "https://www.pikalytics.com/results/daytonareg19m", "https://www.pikalytics.com/results/daytonareg19s",
+                              "https://www.pikalytics.com/results/daytonareg19j", "https://www.pikalytics.com/results/greenreg19m",
+                              "https://www.pikalytics.com/results/greenreg19j", "https://www.pikalytics.com/results/bramreg19m",
+                              "https://www.pikalytics.com/results/bramreg19s", "https://www.pikalytics.com/results/bramreg19j",
+                              "https://www.pikalytics.com/results/colreg19m", "https://www.pikalytics.com/results/colreg19s",
+                              "https://www.pikalytics.com/results/colreg19j", "https://www.pikalytics.com/results/dalreg19m",
+                              "https://www.pikalytics.com/results/dalreg19s", "https://www.pikalytics.com/results/dalreg19j",
+                              "https://www.pikalytics.com/results/haroreg19m", "https://www.pikalytics.com/results/haroreg19s",
+                              "https://www.pikalytics.com/results/haroreg19j", "https://www.pikalytics.com/results/anareg19m",
+                              "https://www.pikalytics.com/results/anareg19s", "https://www.pikalytics.com/results/anareg19j",
+                              "https://www.pikalytics.com/results/roreg19m", "https://www.pikalytics.com/results/roreg19s",
+                              "https://www.pikalytics.com/results/roreg19j", "https://www.pikalytics.com/results/portreg19m",
+                              "https://www.pikalytics.com/results/portreg19s", "https://www.pikalytics.com/results/portreg19j",
+                              "https://www.pikalytics.com/results/memreg19m", "https://www.pikalytics.com/results/memreg19s",
+                              "https://www.pikalytics.com/results/memreg19j", "https://www.pikalytics.com/results/frankreg19m",
+                              "https://www.pikalytics.com/results/frankreg19s", "https://www.pikalytics.com/results/frankreg19j",
+                              "https://www.pikalytics.com/results/philreg19m", "https://www.pikalytics.com/results/philreg19s",
+                              "https://www.pikalytics.com/results/philreg19j", "https://www.pikalytics.com/results/pcinv20",
+                              "https://www.pikalytics.com/results/malmoreg20m", "https://www.pikalytics.com/results/malmoreg20s",
+                              "https://www.pikalytics.com/results/collinsvillereg20m", "https://www.pikalytics.com/results/collinsvillereg20s",
+                              "https://www.pikalytics.com/results/collinsvillereg20j", "https://www.pikalytics.com/results/dallasreg20m",
+                              "https://www.pikalytics.com/results/dallasreg20s", "https://www.pikalytics.com/results/dallasreg20j",
+                              "https://www.pikalytics.com/results/bochumreg20m", "https://www.pikalytics.com/results/bochumreg20s",
+                              "https://www.pikalytics.com/results/bochumreg20j"]
+
+
+for url in urls_with_nationalities:
+
+     page = requests.get(url).text
+     soup = BeautifulSoup(page, "html.parser")
+
+     trainer_links = soup.find_all("h2")
+
+
+     for trainer in trainer_links:
+
+         trainer_names_string = unidecode.unidecode(trainer.text)
+
+         trainer_names_sub = unidecode.unidecode(re.sub(r'\([^)]*\)', '', trainer_names_string))
+
+
+         trainer_names.append(trainer_names_sub)
+
+         trainer_nationalities_string = trainer_names_string[trainer_names_string.find("(")+1:trainer_names_string.find(")")]
+
+         trainer_nationalities.append(trainer_nationalities_string)
+
+         trainer_dictionary[unidecode.unidecode(trainer_names_sub)] = trainer_nationalities_string
+
+
+# Getting the trainer names from results pages formatted like "trainer name"
+for url in urls_without_nationalities:
+
+      page = requests.get(url).text
+      soup = BeautifulSoup(page, "html.parser")
+
+      trainer_links = soup.find_all("h2")
+
+
+
+      for trainer in trainer_links:
+
+          trainer_names_string = unidecode.unidecode(trainer.text)
+          trainer_names_sub = re.sub(r'\([^)]*\)', '', trainer_names_string)
+
+          trainer_names.append(unidecode.unidecode(trainer_names_sub))
+
+          trainer_nationalities_string = trainer_names_string[trainer_names_string.find("(")+1:trainer_names_string.find(")")]
+
+          trainer_nationalities.append(trainer_nationalities_string)
+
+
+          if trainer_names_string[0] == trainer_nationalities_string[0] \
+                  and trainer_names_string[1] == trainer_nationalities_string[1] \
+                  and trainer_names_string[2] == trainer_nationalities_string[2]:
+
+              trainer_dictionary[trainer_names_sub] = "none"
+
+#print(trainer_dictionary)
+
+
+# removing the duplicate key/value pairs from the trainer dictionary
+temp = []
+res = dict()
+for key, val in trainer_dictionary.items():
+
+
+
+    if key not in temp:
+        temp.append(key)
+        res[key] = val
+
+
+# Getting the tournament info for the tournament table
+
+# Getting the tournament info for the Tournament table
+
+
+#tournament_urls = ["https://www.pikalytics.com/results/naint19j", "https://www.pikalytics.com/results/pcfin20"]
+
+
+
+#tournament_urls2 = ["https://www.pikalytics.com/results/madreg18m"]
+
+tournament_dictionary = {}
+
+for url in urls_with_nationalities:
+
+    page = requests.get(url).text
+    soup = BeautifulSoup(page, "html.parser")
+
+    tournament_title = soup.select("h1")[0].text.strip()
+
+    if len(tournament_title.split(" ")[0]) == 7:
+        tournament_year = tournament_title.split(" ")[0].replace("VGC", "")
+
+    if len(tournament_title.split(" ")[1]) == 4:
+        tournament_year = tournament_title.split(" ")[1]
+
+    if len(tournament_title.split(" ")[1]) == 2:
+        tournament_year = "20" + tournament_title.split(" ")[1]
+
+    #tournament_year = str(tournament_title).split(" ")[0].replace("VGC", "")
+
+    tournament_dictionary[tournament_title] = tournament_year
+
+for url in urls_without_nationalities:
+    page = requests.get(url).text
+    soup = BeautifulSoup(page, "html.parser")
+
+    tournament_title = soup.select("h1")[0].text.strip()
+
+
+    if len(tournament_title.split(" ")[0]) == 7:
+        tournament_year = tournament_title.split(" ")[0].replace("VGC", "")
+
+    if len(tournament_title.split(" ")[1]) == 4:
+        tournament_year = tournament_title.split(" ")[1]
+
+    if len(tournament_title.split(" ")[1]) == 2:
+        tournament_year = "20" + tournament_title.split(" ")[1]
+
+    #tournament_year = "20" + str(tournament_title).split(" ")[1]
+
+    tournament_dictionary[tournament_title] = tournament_year
+
+
+# Getting the placement info for the Placement table
+
+# placement results that include nationality
+placement_urls_with_natl = ["https://www.pikalytics.com/results/worlds18m", "https://www.pikalytics.com/results/worlds18s",
+                           "https://www.pikalytics.com/results/worlds18j", "https://www.pikalytics.com/results/naint18m",
+                           "https://www.pikalytics.com/results/naint18s", "https://www.pikalytics.com/results/naint18j",
+                           "https://www.pikalytics.com/results/latamint18m", "https://www.pikalytics.com/results/latamint18s",
+                           "https://www.pikalytics.com/results/latamint18j", "https://www.pikalytics.com/results/oceareg18m",
+                           "https://www.pikalytics.com/results/oceareg18s", "https://www.pikalytics.com/results/oceareg18j",
+                           "https://www.pikalytics.com/results/naint19m", "https://www.pikalytics.com/results/naint19s",
+                           "https://www.pikalytics.com/results/naint19j", "https://www.pikalytics.com/results/euint19m",
+                           "https://www.pikalytics.com/results/euint19s", "https://www.pikalytics.com/results/euint19j",
+                           "https://www.pikalytics.com/results/oceania19m", "https://www.pikalytics.com/results/oceania19s",
+                           "https://www.pikalytics.com/results/oceania19j", "https://www.pikalytics.com/results/latamint19m",
+                           "https://www.pikalytics.com/results/latamint19s", "https://www.pikalytics.com/results/latamint19j",
+                           "https://www.pikalytics.com/results/pc2fin20", "https://www.pikalytics.com/results/pc2reg20",
+                           "https://www.pikalytics.com/results/pcfin20", "https://www.pikalytics.com/results/oceania20m",
+                           "https://www.pikalytics.com/results/oceania20s", "https://www.pikalytics.com/results/oceania20j",
+                           "https://www.pikalytics.com/results/pc25inv21", "https://www.pikalytics.com/results/pc4fin21",
+                           "https://www.pikalytics.com/results/pc4reg21", "https://www.pikalytics.com/results/pc3fin21",
+                           "https://www.pikalytics.com/results/pc3reg21"]
+
+
+
+
+placement_dictionary = {}
+
+# Gets Placement table info from those events that include nationality
+for url in placement_urls_with_natl:
+
+    #tournament_dictionary_placement = {}
+    #tournament_dictionary_placement['VGC2019 North American Juniors Internationals'] = "2019"
+
+    page = requests.get(url).text
+    soup = BeautifulSoup(page, "html.parser")
+
+    tournament_title_placement = soup.select("h1")[0].text.strip()
+
+    if len(tournament_title_placement.split(" ")[0]) == 7:
+        tournament_year_placement = tournament_title_placement.split(" ")[0].replace("VGC", "")
+
+    if len(tournament_title_placement.split(" ")[1]) == 4:
+        tournament_year_placement = tournament_title_placement.split(" ")[1]
+
+    if len(tournament_title_placement.split(" ")[1]) == 2:
+        tournament_year_placement = "20" + tournament_title_placement.split(" ")[1]
+
+    #tournament_year_placement = str(tournament_title_placement).split(" ")[1].replace("VGC", "")
+
+    placement_links = soup.find_all("h2")
+
+
+
+    i = 1
+    for placement in placement_links:
+
+
+         trainer_placement_string = placement.text
+
+
+         placement_names_sub = re.sub(r'\([^)]*\)', '', trainer_placement_string)
+
+         trainer_names.append(placement_names_sub)
+
+         trainer_nationalities_string = trainer_placement_string[trainer_placement_string.find("(")+1:trainer_placement_string.find(")")]
+
+         trainer_nationalities.append(trainer_nationalities_string)
+
+
+
+         placement_dictionary[placement_names_sub] = trainer_nationalities_string, i, tournament_title_placement, tournament_year_placement
+
+         #print("key added")
+
+         i = i + 1
+
+# Gets Placement table info from those events that DO NOT include nationality
+placement_no_nat_names = []
+placement_nationalities2 = []
+
+
+
+for url in urls_without_nationalities:
+    page = requests.get(url).text
+    soup = BeautifulSoup(page, "html.parser")
+
+    placement_links_no_nat = soup.find_all("h2")
+
+    tournament_title2 = soup.select("h1")[0].text.strip()
+
+    if len(tournament_title2.split(" ")[0]) == 7:
+        tournament_year2 = tournament_title2.split(" ")[0].replace("VGC", "")
+
+    if len(tournament_title2.split(" ")[1]) == 4:
+        tournament_year2 = tournament_title2.split(" ")[1]
+
+    if len(tournament_title2.split(" ")[1]) == 2:
+        tournament_year2 = "20" + tournament_title2.split(" ")[1]
+
+    #tournament_year2 = "20" + str(tournament_title2).split(" ")[1]
+
+    j = 1
+    for placement in placement_links_no_nat:
+
+        placement_names_string_no_nat = unidecode.unidecode(placement.text)
+        placement_names_sub_no_nat = re.sub(r'\([^)]*\)', '', placement_names_string_no_nat)
+
+        placement_no_nat_names.append(unidecode.unidecode(placement_names_sub_no_nat))
+
+        placement_nationalities_string2 = placement_names_string_no_nat[
+                                       placement_names_string_no_nat.find("(") + 1:placement_names_string_no_nat.find(")")]
+
+        placement_nationalities2.append(placement_nationalities_string2)
+
+        #print(placement_no_nat_names[0], placement_nationalities2[0])
+        #print(placement_names_string_no_nat, placement_nationalities_string2)
+
+        if placement_nationalities_string2 in placement_names_string_no_nat:
+                # and trainer_names_string[1] == trainer_nationalities_string[1] \
+                # and trainer_names_string[2] == trainer_nationalities_string[2]:
+
+
+            #placement_dictionary[placement_names_sub_no_nat] = "none"
+
+            placement_dictionary[
+                    placement_names_sub_no_nat] = "none", j, tournament_title2, tournament_year2
+            j = j + 1
+
+
+
+
+
+#%%%%%%%%%%%%% End of Trainer, Tournament, Competes, Team info
+
 abilities_df.to_sql("ability", engine, if_exists="append", index=False)
 
 moves_df.to_sql("move", engine, if_exists="append", index=False)
@@ -1206,4 +1532,57 @@ print(df_all_pokemon)
 df_all_pokemon.to_sql("pokemon", engine, if_exists="append", index=False, chunksize=4)
 
 df_hasMove.to_sql("has_move", engine, if_exists="append", index=False)
+
+#write to tables for trainers, team, competes and tournaments goes here
+
+# Loading the trainer dictionary into the Trainer table------------------------
+
+sql = "INSERT INTO trainer (trainer_name, trainer_nationality) VALUES (%s, %s)"
+
+
+for key in res:
+
+        name_val = key
+        nationality_val = res.get(key)
+
+        all_vals = (name_val, nationality_val)
+
+
+        mycursor.execute(sql, all_vals)
+
+        mydb.commit()
+
+# Inserting the tournament info into the Tournament table-----------------
+sql = "INSERT INTO tournament (tournament_name, tournament_year) VALUES (%s, %s)"
+
+for key in tournament_dictionary:
+
+          title_val = key
+          year_val = tournament_dictionary.get(key)
+
+          all_vals = (title_val, year_val)
+
+
+          mycursor.execute(sql, all_vals)
+          mydb.commit()
+
+
+
+# Loads placement info into the Placement table
+sql = "INSERT INTO placement (trainer_name, trainer_nationality, placement, tournament_name, tournament_year) VALUES (%s, %s, %s, %s, %s)"
+sql2 = "SET FOREIGN_KEY_CHECKS=0"
+sql3 = "SET FOREIGN_KEY_CHECKS=1"
+for key in placement_dictionary:
+
+          name_val_p = key
+          other_val_p = placement_dictionary.get(key)
+
+
+          all_vals_p = (name_val_p, *other_val_p)
+
+
+          mycursor.execute(sql2)
+          mycursor.execute(sql, all_vals_p)
+          mycursor.execute(sql3)
+          mydb.commit()
 
