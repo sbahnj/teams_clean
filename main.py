@@ -120,10 +120,10 @@ all_abilities = ['Cacophony']
 species_dict = {}
 learns_move = []
 # for link in ['/wiki/Rattata_(Pok%C3%A9mon)', '/wiki/Raticate_(Pok%C3%A9mon)', '/wiki/Geodude_(Pok%C3%A9mon)', '/wiki/Graveler_(Pok%C3%A9mon)', '/wiki/Golem_(Pok%C3%A9mon)', '/wiki/Grimer_(Pok%C3%A9mon)', '/wiki/Muk_(Pok%C3%A9mon)']:
-# for link in ['/wiki/Ponyta_(Pok%C3%A9mon)', '/wiki/Rapidash_(Pok%C3%A9mon)', '/wiki/Meowth_(Pok%C3%A9mon)', '/wiki/Persian_(Pok%C3%A9mon)']:
+for link in ['/wiki/Kyogre_(Pok%C3%A9mon)', '/wiki/Rillaboom_(Pok%C3%A9mon)', '/wiki/Tornadus_(Pok%C3%A9mon)', '/wiki/Tsareena_(Pok%C3%A9mon)']:
 # for link in ['/wiki/Nidoran%E2%99%82_(Pok%C3%A9mon)', '/wiki/Nidoran%E2%99%80_(Pok%C3%A9mon)', '/wiki/Farfetch%27d_(Pok%C3%A9mon)', '/wiki/Sirfetch%27d_(Pok%C3%A9mon)', '/wiki/Type:_Null_(Pok%C3%A9mon)']:
 #for link in name_links[name_links.index('/wiki/Groudon_(Pok%C3%A9mon)'):]:
-for link in name_links[600:605]:
+#for link in name_links[600:605]:
 # for link in name_links:
     name = re.match('\/wiki\/(.*)_\(Pok%C3%A9mon\)', link).group(1)
     url = 'https://bulbapedia.bulbagarden.net' + link
@@ -586,19 +586,20 @@ for species in species_dict:
     for sp_ability in species_abilities:
         has_ability.append([species, sp_ability])
 
-has_ability_df = pd.DataFrame(has_ability, columns=["Pokemon", "Ability"])
+has_ability_df = pd.DataFrame(has_ability, columns=["species_name", "ability_name"])
 #has_ability_df
 
-species_df = pd.DataFrame.from_dict(species_dict, orient='index', columns=["Type1", "Type2", "HP", "Attack", "Defense", "Special Attack", "Special Defense", "Speed", "Gen", "Fully Evolved"])
+species_df = pd.DataFrame.from_dict(species_dict, orient='index', columns=["species_type_1", "species_type_2", "base_hp", "base_atk", "base_def", "base_spAtk", "base_spDef", "base_speed", "gen_of_origin", "is_fully_evolved"])
+species_df.index.name = "species_name"
 #species_df
 
-learns_move_df = pd.DataFrame(learns_move, columns=["Pokemon", "Move"])
+learns_move_df = pd.DataFrame(learns_move, columns=["species_name", "move_name"])
 #learns_move_df
 
-moves_df = pd.DataFrame(all_moves, columns=["Name", "Type", "Category", "PP", "Power", "Accuracy"])
+moves_df = pd.DataFrame(all_moves, columns=["move_name", "move_type", "move_category", "power_points", "power", "accuracy"])
 #moves_df
 
-abilities_df = pd.DataFrame(all_abilities, columns=["Name"])
+abilities_df = pd.DataFrame(all_abilities, columns=["ability_name"])
 
 
 
@@ -1166,9 +1167,25 @@ for index, row in df_all_pokemon.iterrows():
         # If Pokemon is holding a mega stone, treat it as its mega form
         df_all_pokemon.at[index, "species_name"] = name + ' (Mega)' if re.match("(.*)ite(.*)", item) else name
 
-#insert the pokemon datafram into a table
+
+
+print("Has ability df:")
+print(has_ability_df)
+
+print("species df:")
+print(species_df)
+
+print("learns move df:")
+print(learns_move_df)
+
+print("all pokemon df:")
 print(df_all_pokemon)
-df_all_pokemon.to_sql("pokemon", engine, if_exists="append", index=False)
+
+#insert the pokemon datafram into a table
+species_df.to_sql("species", engine, if_exists="append", index=False)
+
+print(df_all_pokemon)
+df_all_pokemon.to_sql("pokemon", engine, if_exists="append", index=False, chunksize=4)
 
 
 abilities_df.to_sql("abilities", engine, if_exists="append", index=False)
@@ -1176,10 +1193,9 @@ abilities_df.to_sql("abilities", engine, if_exists="append", index=False)
 #insert the has_ability_df
 has_ability_df.to_sql("has_ability", engine, if_exists="append",index=False)
 
-species_df.to_sql("species", engine, if_exists="append", index=False)
-
 moves_df.to_sql("moves", engine, if_exists="append", index=False)
 
 learns_move_df.to_sql("learns_move", engine, if_exists="append", index=False)
 
 df_hasMove.to_sql("has_move", engine, if_exists="append", index=False)
+
