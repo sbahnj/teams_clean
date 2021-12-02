@@ -123,11 +123,15 @@ for item in str(pokemon_list).split(","):
         pokemon_list_abilities.append(ability_clean3)
 
 # find the moves list for each pokemon
+#print("pokemon_list\n", pokemon_list)
 for item in str(pokemon_list).split("]"):
     if "moves" in str(item):
         list = []
+        #print("first character: ", item.split("moves")[1][1])
         list.append(item.split("moves")[1])
         pokemon_list_moves.append(list)
+
+#print(pokemon_list_moves)
 
 # find the held item for each pokemon
 for item in str(pokemon_list).split(","):
@@ -236,6 +240,7 @@ for name in trainer_names_teams:
     p6 = p6 + 6
 
 
+
 # Load the Pokemon table into the db
 # sql = "INSERT INTO pokemon (pokemon_id, species_name, species_type) VALUES (%s, %s, %s)"
 #
@@ -320,6 +325,7 @@ for pokemon_id in str(pokemon_ids).split(","):
     data_list.append(frame_row)
 
 
+#print("data_list", data_list)
 df = pd.DataFrame(data_list, columns=['team_id', 'pokemon_id'])
 
 
@@ -360,6 +366,7 @@ for pokemon_id in str(pokemon_ids).split(","):
 
     data_list_all_pokemon.append(frame_row)
 
+#print("data_list_all_pokemon", data_list_all_pokemon)
 df_all_pokemon = pd.DataFrame(data_list_all_pokemon, columns=['pokemon_id', 'species_name', 'ability', "item", "can_gmax"])
 
 
@@ -395,10 +402,9 @@ for value in pokemon_can_gmax:
     df_all_pokemon.at[i, "can_gmax"] = value
     i = i + 1
 
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
-#insert the pokemon datafram into a table
-df_all_pokemon.to_sql("all_pokemon", engine, if_exists="replace")
 
 
 #get info for has_move
@@ -425,6 +431,7 @@ for item in pokemon_list_moves:
 
         pokemon_with_move = pokemon_with_move + 1
 
+print(moves_ids_list)
 
 single_move = []
 l = 0
@@ -468,6 +475,8 @@ for item in moves_ids_list:
 
 df_hasMove = pd.DataFrame(data_list_hasMove, columns=['pokemon_id', 'move_name'])
 
+for i in range(len(single_move)):
+    single_move[i] = single_move[i].strip()
 
 # updating the moves
 i = 0
@@ -478,8 +487,93 @@ for single in single_move:
     i = i + 1
 
 
-print(df_hasMove)
+#print(df_hasMove)
 
 #insert the pokemon datafram into a table
 df_hasMove.to_sql("has_move", engine, if_exists="replace")
 
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# it goes between code where Pokemon instance dictionary is made and dataframe is made from said dictionary
+form_checker = {
+    "Aegislash": lambda name, ability, moves, item: "Aegislash (Shield Forme)",
+    "Groudon": lambda name, ability, moves, item: "Groudon (Primal)" if item == "Red Orb" else "Groudon",
+    "Kyogre": lambda name, ability, moves, item: "Kyogre (Primal)" if item == "Blue Orb" else "Kyogre",
+    "Giratina": lambda name, ability, moves, item: "Giratina (Origin Forme)" if item == "Griseous Orb" else "Giratina",
+    "Giratina-Origin": lambda name, ability, moves, item: "Giratina (Origin Forme)",
+    "Landorus": lambda name, ability, moves,
+                       item: "Landorus (Therian Forme)" if ability == "Intimidate" else "Landorus",
+    "Thundurus": lambda name, ability, moves,
+                        item: "Thundurus (Therian Forme)" if ability == "Volt Absorb" else "Thundurus",
+    "Tornadus": lambda name, ability, moves,
+                       item: "Tornadus (Therian Forme)" if ability == "Regenerator" else "Tornadus",
+    "Kyurem": lambda name, ability, moves, item: "Kyurem (White)" if ability == "Turboblaze" else (
+        "Kyurem (Black)" if ability == "Teravolt" else "Kyurem"),
+    "Kyurem-White": lambda name, ability, moves, item: "Kyurem (White)",
+    "Kyurem-Black": lambda name, ability, moves, item: "Kyurem (Black)",
+    "Greninja": lambda name, ability, moves, item: "Greninja (Ash)" if ability == "Battle Bond" else "Greninja",
+    "Zygarde": lambda name, ability, moves,
+                      item: "Zygarde (Complete Forme)" if ability == "Power Construct" else "Zygarde",
+    "Zygarde-10%": lambda name, ability, moves, item: "Zygarde (10% Forme)",
+    "Necrozma": lambda name, ability, moves, item: "Necrozma (Dawn Wings)" if "Moongeist Beam" in moves else (
+        "Necrozma (Dusk Mane)" if "Sunsteel Strike" in moves else "Necrozma"),
+    "Necrozma-Dawn-Wings": lambda name, ability, moves, item: "Necrozma (Dawn Wings)",
+    "Necrozma-Dusk-Mane": lambda name, ability, moves, item: "Necrozma (Dusk Mane)",
+    "Zacian": lambda name, ability, moves,
+                     item: "Zacian (Crowned Sword)" if item == "Rusted Sword" else "Zacian (Hero of Many Battles)",
+    "Zamazenta": lambda name, ability, moves,
+                        item: "Zamazenta (Crowned Shield)" if item == "Rusted Shield" else "Zamazenta (Hero of Many Battles)",
+    "Urshifu": lambda name, ability, moves,
+                      item: "Urshifu (Rapid Strike Style)" if "Surging Strikes" in moves else "Urshifu (Single Strike Style)",
+    "Calyrex": lambda name, ability, moves, item: "Calyrex (Shadow Rider)" if "Astral Barrage" in moves else (
+        "Calyrex (Ice Rider)" if "Glacial Lance" in moves else "Calyrex"),
+    "Ninetales": lambda name, ability, moves,
+                        item: "Ninetales (Alolan)" if ability == "Snow Cloak" or ability == "Snow Warning" else "Ninetales",
+    "Sandslash": lambda name, ability, moves,
+                        item: "Sandslash (Alolan)" if ability == "Snow Cloak" or ability == "Slush Rush" else "Sandslash",
+    "Raichu": lambda name, ability, moves,
+                     item: "Raichu (Alolan)" if ability == "Surge Surfer" or ability == "Surge Surger" else "Raichu",
+    "Persian": lambda name, ability, moves,
+                      item: "Persian (Alolan)" if ability == "Fur Coat" or ability == "Rattled" else "Persian",
+
+}
+# assuming that there's a dict called poke_dict holding all the individual Pokemon that maps pokemon_id : [attributes]
+# attributes in order: species_name, [species_type (type1, type2)], ability, [moves (4)], held_item, can_gmax
+# for poke_id in poke_dict:
+#     name = poke_dict[poke_id][0]
+#     types = poke_dict[poke_id][1]
+#     ability = poke_dict[poke_id][2]
+#     moves = poke_dict[poke_id][3]
+#     item = poke_dict[poke_id][4]
+#     # Change the name depending on what form it is. Ex. Calyrex that knows Astral Barrage => Calyrex (Shadow Rider)
+#     if (name in form_checker):
+#         poke_dict[poke_id][0] = form_checker[name](name, types, ability, moves, item)
+#     else:
+#         # If Pokemon is holding a mega stone, treat it as its mega form
+#         poke_dict[poke_id][0] = name + ' (Mega)' if re.match("(.*)ite(.*)", item) else name
+
+# print(poke_dict)
+#print("single_move", single_move)
+
+#print("single_move", single_move)
+
+move_index_list = [[moves_ids_list[i], single_move[i]] for i in
+                   range(len(moves_ids_list))]  # moves_ids_list, single_move
+
+for index, row in df_all_pokemon.iterrows():
+    name = df_all_pokemon.at[index, "species_name"]
+    ability = df_all_pokemon.at[index, "ability"]
+    moves = [item[1] for item in move_index_list if item[0] == index]
+
+    print(name, " ", moves, "\n")
+
+    item = df_all_pokemon.at[index, "item"]
+    # Change the name depending on what form it is. Ex. Calyrex that knows Astral Barrage => Calyrex (Shadow Rider)
+    if (name in form_checker):
+        df_all_pokemon.at[index, "species_name"] = form_checker[name](name, ability, moves, item)
+    else:
+        # If Pokemon is holding a mega stone, treat it as its mega form
+        df_all_pokemon.at[index, "species_name"] = name + ' (Mega)' if re.match("(.*)ite(.*)", item) else name
+
+#insert the pokemon datafram into a table
+df_all_pokemon.to_sql("all_pokemon", engine, if_exists="replace")
