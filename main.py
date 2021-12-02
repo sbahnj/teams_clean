@@ -1199,7 +1199,7 @@ trainer_dictionary = {}
 
 # Getting the names and nationalities from pages formatted like "trainer name (trainer nationality)"
 
-#from 2018 - 2021
+
 urls_with_nationalities = ["https://www.pikalytics.com/results/worlds18m", "https://www.pikalytics.com/results/worlds18s",
                            "https://www.pikalytics.com/results/worlds18j", "https://www.pikalytics.com/results/naint18m",
                            "https://www.pikalytics.com/results/naint18s", "https://www.pikalytics.com/results/naint18j",
@@ -1220,7 +1220,7 @@ urls_with_nationalities = ["https://www.pikalytics.com/results/worlds18m", "http
                            "https://www.pikalytics.com/results/pc3reg21"]
 
 
-#from 2018 - 2021
+
 urls_without_nationalities = ["https://www.pikalytics.com/results/shefreg18m", "https://www.pikalytics.com/results/madreg18m",
                               "https://www.pikalytics.com/results/roanreg18m", "https://www.pikalytics.com/results/torreg18m",
                               "https://www.pikalytics.com/results/saltreg18m", "https://www.pikalytics.com/results/sindreg18m",
@@ -1330,14 +1330,6 @@ for key, val in trainer_dictionary.items():
 
 # Getting the tournament info for the tournament table
 
-# Getting the tournament info for the Tournament table
-
-
-#tournament_urls = ["https://www.pikalytics.com/results/naint19j", "https://www.pikalytics.com/results/pcfin20"]
-
-
-
-#tournament_urls2 = ["https://www.pikalytics.com/results/madreg18m"]
 
 tournament_dictionary = {}
 
