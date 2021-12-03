@@ -128,7 +128,7 @@ learns_move = []
 #for link in name_links[name_links.index('/wiki/Groudon_(Pok%C3%A9mon)'):]:
 #for link in name_links[600:605]:
 #for link in name_links:
-for link in []:
+for link in ['/wiki/Aegislash_(Pok%C3%A9mon)']:
 #for link in ['/wiki/Gastrodon_(Pok%C3%A9mon)', '/wiki/Incineroar_(Pok%C3%A9mon)', '/wiki/Kartana_(Pok%C3%A9mon)', '/wiki/Salamence_(Pok%C3%A9mon)', '/wiki/Snorlax_(Pok%C3%A9mon)', '/wiki/Tapu_Koko_(Pok%C3%A9mon)', '/wiki/Gengar_(Pok%C3%A9mon)', '/wiki/Landorus_(Pok%C3%A9mon)', '/wiki/Latias_(Pok%C3%A9mon)', '/wiki/Politoed_(Pok%C3%A9mon)', '/wiki/Tapu_Bulu_(Pok%C3%A9mon)', '/wiki/Metagross_(Pok%C3%A9mon)', '/wiki/Mimikyu_(Pok%C3%A9mon)', '/wiki/Amoonguss_(Pok%C3%A9mon)', '/wiki/Gothitelle_(Pok%C3%A9mon)', '/wiki/Tapu_Fini_(Pok%C3%A9mon)', '/wiki/Tyranitar_(Pok%C3%A9mon)', '/wiki/Cresselia_(Pok%C3%A9mon)', '/wiki/Heatran_(Pok%C3%A9mon)', '/wiki/Kangaskhan_(Pok%C3%A9mon)', '/wiki/Charizard_(Pok%C3%A9mon)', '/wiki/Tapu_Lele_(Pok%C3%A9mon)', '/wiki/Persian_(Pok%C3%A9mon)', '/wiki/Volcarona_(Pok%C3%A9mon)']:
     name = re.match('\/wiki\/(.*)_\(Pok%C3%A9mon\)', link).group(1)
     url = 'https://bulbapedia.bulbagarden.net' + link
@@ -552,6 +552,19 @@ for link in []:
     # print(abilities)
     # print("HP: " + hp + "\n" + "Atk: " + attack + "\n" + "Def: " + defense + "\n" + "SpAtk: " + spAtk + "\n" + "SpDef: " + spDef + "\n" + "Speed: " + speed + "\n")
 
+#print(learns_move)
+import copy
+learns_move_cp = copy.deepcopy(learns_move)
+for i in range(len(learns_move_cp)):
+    print(learns_move_cp[i])
+    pokemon_name = learns_move_cp[i][0]
+    move_name = learns_move_cp[i][1]
+    if i != len(learns_move_cp) - 1:
+        if [pokemon_name, move_name] in learns_move_cp[i + 1:]:
+            learns_move.remove([pokemon_name, move_name])
+
+#print("learns move\n", learns_move)
+
 pp.pprint(species_dict)
 print(sorted(all_abilities))
 
@@ -703,9 +716,9 @@ urls_without_nationalities = ["https://www.pikalytics.com/results/shefreg18m", "
                               "https://www.pikalytics.com/results/dallasreg20s", "https://www.pikalytics.com/results/dallasreg20j",
                               "https://www.pikalytics.com/results/bochumreg20m", "https://www.pikalytics.com/results/bochumreg20s",
                               "https://www.pikalytics.com/results/bochumreg20j"]
-# TODO remove this
-urls_with_nationalities = ["https://www.pikalytics.com/results/worlds18m"]
-urls_without_nationalities = ["https://www.pikalytics.com/results/shefreg18m"]
+# # TODO remove this
+# urls_with_nationalities = ["https://www.pikalytics.com/results/worlds18m", "https://www.pikalytics.com/results/oceania20s"]
+# urls_without_nationalities = ["https://www.pikalytics.com/results/shefreg18m", "https://www.pikalytics.com/results/bochumreg20j"]
 
 for url in urls_with_nationalities:
     page = requests.get(url).text
@@ -1743,7 +1756,7 @@ for url in urls_without_nationalities:
     tournament_dictionary[tournament_title] = tournament_year
 
 
-# Getting the placement info for the Placement table
+# Getting the placement info for the competes table
 
 # placement results that include nationality
 placement_urls_with_natl = ["https://www.pikalytics.com/results/worlds18m", "https://www.pikalytics.com/results/worlds18s",
