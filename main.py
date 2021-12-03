@@ -127,7 +127,9 @@ learns_move = []
 # for link in ['/wiki/Nidoran%E2%99%82_(Pok%C3%A9mon)', '/wiki/Nidoran%E2%99%80_(Pok%C3%A9mon)', '/wiki/Farfetch%27d_(Pok%C3%A9mon)', '/wiki/Sirfetch%27d_(Pok%C3%A9mon)', '/wiki/Type:_Null_(Pok%C3%A9mon)']:
 #for link in name_links[name_links.index('/wiki/Groudon_(Pok%C3%A9mon)'):]:
 #for link in name_links[600:605]:
-for link in name_links:
+#for link in name_links:
+for link in []:
+#for link in ['/wiki/Gastrodon_(Pok%C3%A9mon)', '/wiki/Incineroar_(Pok%C3%A9mon)', '/wiki/Kartana_(Pok%C3%A9mon)', '/wiki/Salamence_(Pok%C3%A9mon)', '/wiki/Snorlax_(Pok%C3%A9mon)', '/wiki/Tapu_Koko_(Pok%C3%A9mon)', '/wiki/Gengar_(Pok%C3%A9mon)', '/wiki/Landorus_(Pok%C3%A9mon)', '/wiki/Latias_(Pok%C3%A9mon)', '/wiki/Politoed_(Pok%C3%A9mon)', '/wiki/Tapu_Bulu_(Pok%C3%A9mon)', '/wiki/Metagross_(Pok%C3%A9mon)', '/wiki/Mimikyu_(Pok%C3%A9mon)', '/wiki/Amoonguss_(Pok%C3%A9mon)', '/wiki/Gothitelle_(Pok%C3%A9mon)', '/wiki/Tapu_Fini_(Pok%C3%A9mon)', '/wiki/Tyranitar_(Pok%C3%A9mon)', '/wiki/Cresselia_(Pok%C3%A9mon)', '/wiki/Heatran_(Pok%C3%A9mon)', '/wiki/Kangaskhan_(Pok%C3%A9mon)', '/wiki/Charizard_(Pok%C3%A9mon)', '/wiki/Tapu_Lele_(Pok%C3%A9mon)', '/wiki/Persian_(Pok%C3%A9mon)', '/wiki/Volcarona_(Pok%C3%A9mon)']:
     name = re.match('\/wiki\/(.*)_\(Pok%C3%A9mon\)', link).group(1)
     url = 'https://bulbapedia.bulbagarden.net' + link
     page = requests.get(url).text
@@ -629,19 +631,95 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 # teams in tournaments from 2016 - 2021, urls both with and without trainer nationalities
-sample_team_url = ["https://www.pikalytics.com/results/pc25inv21"]
+# sample_team_url = ["https://www.pikalytics.com/results/pc25inv21"]
 
 
 all_exported_teams = []
-for url in sample_team_url:
+# for url in sample_team_url:
+#
+#      page = requests.get(url).text
+#      soup = BeautifulSoup(page, "html.parser")
+#
+#      export_teams = soup.find_all("span", {"class" : "export-results-team"})
+#      all_exported_teams.append(export_teams)
 
-     page = requests.get(url).text
-     soup = BeautifulSoup(page, "html.parser")
 
-     export_teams = soup.find_all("span", {"class" : "export-results-team"})
-     all_exported_teams.append(export_teams)
+urls_with_nationalities = ["https://www.pikalytics.com/results/worlds18m", "https://www.pikalytics.com/results/worlds18s",
+                           "https://www.pikalytics.com/results/worlds18j", "https://www.pikalytics.com/results/naint18m",
+                           "https://www.pikalytics.com/results/naint18s", "https://www.pikalytics.com/results/naint18j",
+                           "https://www.pikalytics.com/results/latamint18m", "https://www.pikalytics.com/results/latamint18s",
+                           "https://www.pikalytics.com/results/latamint18j", "https://www.pikalytics.com/results/oceareg18m",
+                           "https://www.pikalytics.com/results/oceareg18s", "https://www.pikalytics.com/results/oceareg18j",
+                           "https://www.pikalytics.com/results/naint19m", "https://www.pikalytics.com/results/naint19s",
+                           "https://www.pikalytics.com/results/naint19j", "https://www.pikalytics.com/results/euint19m",
+                           "https://www.pikalytics.com/results/euint19s", "https://www.pikalytics.com/results/euint19j",
+                           "https://www.pikalytics.com/results/oceania19m", "https://www.pikalytics.com/results/oceania19s",
+                           "https://www.pikalytics.com/results/oceania19j", "https://www.pikalytics.com/results/latamint19m",
+                           "https://www.pikalytics.com/results/latamint19s", "https://www.pikalytics.com/results/latamint19j",
+                           "https://www.pikalytics.com/results/pc2fin20", "https://www.pikalytics.com/results/pc2reg20",
+                           "https://www.pikalytics.com/results/pcfin20", "https://www.pikalytics.com/results/oceania20m",
+                           "https://www.pikalytics.com/results/oceania20s", "https://www.pikalytics.com/results/oceania20j",
+                           "https://www.pikalytics.com/results/pc25inv21", "https://www.pikalytics.com/results/pc4fin21",
+                           "https://www.pikalytics.com/results/pc4reg21", "https://www.pikalytics.com/results/pc3fin21",
+                           "https://www.pikalytics.com/results/pc3reg21"]
 
 
+
+urls_without_nationalities = ["https://www.pikalytics.com/results/shefreg18m", "https://www.pikalytics.com/results/madreg18m",
+                              "https://www.pikalytics.com/results/roanreg18m", "https://www.pikalytics.com/results/torreg18m",
+                              "https://www.pikalytics.com/results/saltreg18m", "https://www.pikalytics.com/results/sindreg18m",
+                              "https://www.pikalytics.com/results/portreg18m", "https://www.pikalytics.com/results/charreg18m",
+                              "https://www.pikalytics.com/results/colinreg18m", "https://www.pikalytics.com/results/malmoreg18m",
+                              "https://www.pikalytics.com/results/leipreg18m", "https://www.pikalytics.com/results/leipreg18s",
+                              "https://www.pikalytics.com/results/leipreg18j", "https://www.pikalytics.com/results/dalreg18m",
+                              "https://www.pikalytics.com/results/dalreg18s", "https://www.pikalytics.com/results/dalreg18j",
+                              "https://www.pikalytics.com/results/madisonreg19m", "https://www.pikalytics.com/results/madisonreg19s",
+                              "https://www.pikalytics.com/results/madisonreg19j", "https://www.pikalytics.com/results/santareg19m",
+                              "https://www.pikalytics.com/results/santareg19s", "https://www.pikalytics.com/results/santareg19j",
+                              "https://www.pikalytics.com/results/bristreg19m", "https://www.pikalytics.com/results/bristreg19s",
+                              "https://www.pikalytics.com/results/bristreg19j", "https://www.pikalytics.com/results/hartreg19m",
+                              "https://www.pikalytics.com/results/hartreg19s", "https://www.pikalytics.com/results/hartreg19j",
+                              "https://www.pikalytics.com/results/daytonareg19m", "https://www.pikalytics.com/results/daytonareg19s",
+                              "https://www.pikalytics.com/results/daytonareg19j", "https://www.pikalytics.com/results/greenreg19m",
+                              "https://www.pikalytics.com/results/greenreg19j", "https://www.pikalytics.com/results/bramreg19m",
+                              "https://www.pikalytics.com/results/bramreg19s", "https://www.pikalytics.com/results/bramreg19j",
+                              "https://www.pikalytics.com/results/colreg19m", "https://www.pikalytics.com/results/colreg19s",
+                              "https://www.pikalytics.com/results/colreg19j", "https://www.pikalytics.com/results/dalreg19m",
+                              "https://www.pikalytics.com/results/dalreg19s", "https://www.pikalytics.com/results/dalreg19j",
+                              "https://www.pikalytics.com/results/haroreg19m", "https://www.pikalytics.com/results/haroreg19s",
+                              "https://www.pikalytics.com/results/haroreg19j", "https://www.pikalytics.com/results/anareg19m",
+                              "https://www.pikalytics.com/results/anareg19s", "https://www.pikalytics.com/results/anareg19j",
+                              "https://www.pikalytics.com/results/roreg19m", "https://www.pikalytics.com/results/roreg19s",
+                              "https://www.pikalytics.com/results/roreg19j", "https://www.pikalytics.com/results/portreg19m",
+                              "https://www.pikalytics.com/results/portreg19s", "https://www.pikalytics.com/results/portreg19j",
+                              "https://www.pikalytics.com/results/memreg19m", "https://www.pikalytics.com/results/memreg19s",
+                              "https://www.pikalytics.com/results/memreg19j", "https://www.pikalytics.com/results/frankreg19m",
+                              "https://www.pikalytics.com/results/frankreg19s", "https://www.pikalytics.com/results/frankreg19j",
+                              "https://www.pikalytics.com/results/philreg19m", "https://www.pikalytics.com/results/philreg19s",
+                              "https://www.pikalytics.com/results/philreg19j", "https://www.pikalytics.com/results/pcinv20",
+                              "https://www.pikalytics.com/results/malmoreg20m", "https://www.pikalytics.com/results/malmoreg20s",
+                              "https://www.pikalytics.com/results/collinsvillereg20m", "https://www.pikalytics.com/results/collinsvillereg20s",
+                              "https://www.pikalytics.com/results/collinsvillereg20j", "https://www.pikalytics.com/results/dallasreg20m",
+                              "https://www.pikalytics.com/results/dallasreg20s", "https://www.pikalytics.com/results/dallasreg20j",
+                              "https://www.pikalytics.com/results/bochumreg20m", "https://www.pikalytics.com/results/bochumreg20s",
+                              "https://www.pikalytics.com/results/bochumreg20j"]
+# TODO remove this
+urls_with_nationalities = ["https://www.pikalytics.com/results/worlds18m"]
+urls_without_nationalities = ["https://www.pikalytics.com/results/shefreg18m"]
+
+for url in urls_with_nationalities:
+    page = requests.get(url).text
+    soup = BeautifulSoup(page, "html.parser")
+
+    export_teams = soup.find_all("span", {"class" : "export-results-team"})
+    all_exported_teams.append(export_teams)
+
+for url in urls_without_nationalities:
+    page = requests.get(url).text
+    soup = BeautifulSoup(page, "html.parser")
+
+    export_teams = soup.find_all("span", {"class" : "export-results-team"})
+    all_exported_teams.append(export_teams)
 
 
 teams_dict = {}
@@ -797,7 +875,97 @@ for name in pokemon_list_names:
 trainer_names_teams = []
 
 # Get the trainer name for each team
-for url in sample_team_url:
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# for url in:
+#
+#      page = requests.get(url).text
+#      soup = BeautifulSoup(page, "html.parser")
+#
+#      trainer_links = soup.find_all("h2")
+#
+#
+#      for trainer in trainer_links:
+#
+#          trainer_names_teams_string = unidecode.unidecode(trainer.text)
+#
+#          trainer_names_teams_sub = unidecode.unidecode(re.sub(r'\([^)]*\)', '', trainer_names_teams_string))
+#
+#
+#          trainer_names_teams.append(trainer_names_teams_sub)
+# #
+trainer_names = []
+trainer_nationalities = []
+trainer_dictionary = {}
+
+# Getting the names and nationalities from pages formatted like "trainer name (trainer nationality)"
+
+#
+# urls_with_nationalities = ["https://www.pikalytics.com/results/worlds18m", "https://www.pikalytics.com/results/worlds18s",
+#                            "https://www.pikalytics.com/results/worlds18j", "https://www.pikalytics.com/results/naint18m",
+#                            "https://www.pikalytics.com/results/naint18s", "https://www.pikalytics.com/results/naint18j",
+#                            "https://www.pikalytics.com/results/latamint18m", "https://www.pikalytics.com/results/latamint18s",
+#                            "https://www.pikalytics.com/results/latamint18j", "https://www.pikalytics.com/results/oceareg18m",
+#                            "https://www.pikalytics.com/results/oceareg18s", "https://www.pikalytics.com/results/oceareg18j",
+#                            "https://www.pikalytics.com/results/naint19m", "https://www.pikalytics.com/results/naint19s",
+#                            "https://www.pikalytics.com/results/naint19j", "https://www.pikalytics.com/results/euint19m",
+#                            "https://www.pikalytics.com/results/euint19s", "https://www.pikalytics.com/results/euint19j",
+#                            "https://www.pikalytics.com/results/oceania19m", "https://www.pikalytics.com/results/oceania19s",
+#                            "https://www.pikalytics.com/results/oceania19j", "https://www.pikalytics.com/results/latamint19m",
+#                            "https://www.pikalytics.com/results/latamint19s", "https://www.pikalytics.com/results/latamint19j",
+#                            "https://www.pikalytics.com/results/pc2fin20", "https://www.pikalytics.com/results/pc2reg20",
+#                            "https://www.pikalytics.com/results/pcfin20", "https://www.pikalytics.com/results/oceania20m",
+#                            "https://www.pikalytics.com/results/oceania20s", "https://www.pikalytics.com/results/oceania20j",
+#                            "https://www.pikalytics.com/results/pc25inv21", "https://www.pikalytics.com/results/pc4fin21",
+#                            "https://www.pikalytics.com/results/pc4reg21", "https://www.pikalytics.com/results/pc3fin21",
+#                            "https://www.pikalytics.com/results/pc3reg21"]
+#
+#
+#
+# urls_without_nationalities = ["https://www.pikalytics.com/results/shefreg18m", "https://www.pikalytics.com/results/madreg18m",
+#                               "https://www.pikalytics.com/results/roanreg18m", "https://www.pikalytics.com/results/torreg18m",
+#                               "https://www.pikalytics.com/results/saltreg18m", "https://www.pikalytics.com/results/sindreg18m",
+#                               "https://www.pikalytics.com/results/portreg18m", "https://www.pikalytics.com/results/charreg18m",
+#                               "https://www.pikalytics.com/results/colinreg18m", "https://www.pikalytics.com/results/malmoreg18m",
+#                               "https://www.pikalytics.com/results/leipreg18m", "https://www.pikalytics.com/results/leipreg18s",
+#                               "https://www.pikalytics.com/results/leipreg18j", "https://www.pikalytics.com/results/dalreg18m",
+#                               "https://www.pikalytics.com/results/dalreg18s", "https://www.pikalytics.com/results/dalreg18j",
+#                               "https://www.pikalytics.com/results/madisonreg19m", "https://www.pikalytics.com/results/madisonreg19s",
+#                               "https://www.pikalytics.com/results/madisonreg19j", "https://www.pikalytics.com/results/santareg19m",
+#                               "https://www.pikalytics.com/results/santareg19s", "https://www.pikalytics.com/results/santareg19j",
+#                               "https://www.pikalytics.com/results/bristreg19m", "https://www.pikalytics.com/results/bristreg19s",
+#                               "https://www.pikalytics.com/results/bristreg19j", "https://www.pikalytics.com/results/hartreg19m",
+#                               "https://www.pikalytics.com/results/hartreg19s", "https://www.pikalytics.com/results/hartreg19j",
+#                               "https://www.pikalytics.com/results/daytonareg19m", "https://www.pikalytics.com/results/daytonareg19s",
+#                               "https://www.pikalytics.com/results/daytonareg19j", "https://www.pikalytics.com/results/greenreg19m",
+#                               "https://www.pikalytics.com/results/greenreg19j", "https://www.pikalytics.com/results/bramreg19m",
+#                               "https://www.pikalytics.com/results/bramreg19s", "https://www.pikalytics.com/results/bramreg19j",
+#                               "https://www.pikalytics.com/results/colreg19m", "https://www.pikalytics.com/results/colreg19s",
+#                               "https://www.pikalytics.com/results/colreg19j", "https://www.pikalytics.com/results/dalreg19m",
+#                               "https://www.pikalytics.com/results/dalreg19s", "https://www.pikalytics.com/results/dalreg19j",
+#                               "https://www.pikalytics.com/results/haroreg19m", "https://www.pikalytics.com/results/haroreg19s",
+#                               "https://www.pikalytics.com/results/haroreg19j", "https://www.pikalytics.com/results/anareg19m",
+#                               "https://www.pikalytics.com/results/anareg19s", "https://www.pikalytics.com/results/anareg19j",
+#                               "https://www.pikalytics.com/results/roreg19m", "https://www.pikalytics.com/results/roreg19s",
+#                               "https://www.pikalytics.com/results/roreg19j", "https://www.pikalytics.com/results/portreg19m",
+#                               "https://www.pikalytics.com/results/portreg19s", "https://www.pikalytics.com/results/portreg19j",
+#                               "https://www.pikalytics.com/results/memreg19m", "https://www.pikalytics.com/results/memreg19s",
+#                               "https://www.pikalytics.com/results/memreg19j", "https://www.pikalytics.com/results/frankreg19m",
+#                               "https://www.pikalytics.com/results/frankreg19s", "https://www.pikalytics.com/results/frankreg19j",
+#                               "https://www.pikalytics.com/results/philreg19m", "https://www.pikalytics.com/results/philreg19s",
+#                               "https://www.pikalytics.com/results/philreg19j", "https://www.pikalytics.com/results/pcinv20",
+#                               "https://www.pikalytics.com/results/malmoreg20m", "https://www.pikalytics.com/results/malmoreg20s",
+#                               "https://www.pikalytics.com/results/collinsvillereg20m", "https://www.pikalytics.com/results/collinsvillereg20s",
+#                               "https://www.pikalytics.com/results/collinsvillereg20j", "https://www.pikalytics.com/results/dallasreg20m",
+#                               "https://www.pikalytics.com/results/dallasreg20s", "https://www.pikalytics.com/results/dallasreg20j",
+#                               "https://www.pikalytics.com/results/bochumreg20m", "https://www.pikalytics.com/results/bochumreg20s",
+#                               "https://www.pikalytics.com/results/bochumreg20j"]
+
+# TODO remove this
+# urls_with_nationalities = ["https://www.pikalytics.com/results/worlds18m"]
+# urls_without_nationalities = []
+
+
+for url in urls_with_nationalities:
 
      page = requests.get(url).text
      soup = BeautifulSoup(page, "html.parser")
@@ -807,12 +975,63 @@ for url in sample_team_url:
 
      for trainer in trainer_links:
 
-         trainer_names_teams_string = unidecode.unidecode(trainer.text)
+         trainer_names_string = unidecode.unidecode(trainer.text)
 
-         trainer_names_teams_sub = unidecode.unidecode(re.sub(r'\([^)]*\)', '', trainer_names_teams_string))
+         trainer_names_sub = unidecode.unidecode(re.sub(r'\([^)]*\)', '', trainer_names_string))
 
 
-         trainer_names_teams.append(trainer_names_teams_sub)
+         trainer_names.append(trainer_names_sub)
+
+         trainer_nationalities_string = trainer_names_string[trainer_names_string.find("(")+1:trainer_names_string.find(")")]
+
+         trainer_nationalities.append(trainer_nationalities_string)
+
+         trainer_dictionary[unidecode.unidecode(trainer_names_sub)] = trainer_nationalities_string
+         trainer_names_teams.append(trainer_names_string)
+
+
+# Getting the trainer names from results pages formatted like "trainer name"
+for url in urls_without_nationalities:
+
+      page = requests.get(url).text
+      soup = BeautifulSoup(page, "html.parser")
+
+      trainer_links = soup.find_all("h2")
+
+
+
+      for trainer in trainer_links:
+
+          trainer_names_string = unidecode.unidecode(trainer.text)
+          trainer_names_sub = re.sub(r'\([^)]*\)', '', trainer_names_string)
+
+          trainer_names.append(unidecode.unidecode(trainer_names_sub))
+          trainer_names_teams.append(trainer_names_string)
+
+          trainer_nationalities_string = trainer_names_string[trainer_names_string.find("(")+1:trainer_names_string.find(")")]
+
+          trainer_nationalities.append(trainer_nationalities_string)
+
+
+          if trainer_names_string[0] == trainer_nationalities_string[0] \
+                  and trainer_names_string[1] == trainer_nationalities_string[1] \
+                  and trainer_names_string[2] == trainer_nationalities_string[2]:
+
+              trainer_dictionary[trainer_names_sub] = "none"
+
+
+print("here")
+
+# removing the duplicate key/value pairs from the trainer dictionary
+temp = []
+res = dict()
+for key, val in trainer_dictionary.items():
+
+
+
+    if key not in temp:
+        temp.append(key)
+        res[key] = val
 
 
 i = 0
@@ -965,10 +1184,160 @@ for pokemon_id in str(pokemon_ids).split(","):
 
 
     data_list_all_pokemon.append(frame_row)
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# trainer_names = []
+# trainer_nationalities = []
+# trainer_dictionary = {}
+#
+# # Getting the names and nationalities from pages formatted like "trainer name (trainer nationality)"
+#
+#
+# urls_with_nationalities = ["https://www.pikalytics.com/results/worlds18m", "https://www.pikalytics.com/results/worlds18s",
+#                            "https://www.pikalytics.com/results/worlds18j", "https://www.pikalytics.com/results/naint18m",
+#                            "https://www.pikalytics.com/results/naint18s", "https://www.pikalytics.com/results/naint18j",
+#                            "https://www.pikalytics.com/results/latamint18m", "https://www.pikalytics.com/results/latamint18s",
+#                            "https://www.pikalytics.com/results/latamint18j", "https://www.pikalytics.com/results/oceareg18m",
+#                            "https://www.pikalytics.com/results/oceareg18s", "https://www.pikalytics.com/results/oceareg18j",
+#                            "https://www.pikalytics.com/results/naint19m", "https://www.pikalytics.com/results/naint19s",
+#                            "https://www.pikalytics.com/results/naint19j", "https://www.pikalytics.com/results/euint19m",
+#                            "https://www.pikalytics.com/results/euint19s", "https://www.pikalytics.com/results/euint19j",
+#                            "https://www.pikalytics.com/results/oceania19m", "https://www.pikalytics.com/results/oceania19s",
+#                            "https://www.pikalytics.com/results/oceania19j", "https://www.pikalytics.com/results/latamint19m",
+#                            "https://www.pikalytics.com/results/latamint19s", "https://www.pikalytics.com/results/latamint19j",
+#                            "https://www.pikalytics.com/results/pc2fin20", "https://www.pikalytics.com/results/pc2reg20",
+#                            "https://www.pikalytics.com/results/pcfin20", "https://www.pikalytics.com/results/oceania20m",
+#                            "https://www.pikalytics.com/results/oceania20s", "https://www.pikalytics.com/results/oceania20j",
+#                            "https://www.pikalytics.com/results/pc25inv21", "https://www.pikalytics.com/results/pc4fin21",
+#                            "https://www.pikalytics.com/results/pc4reg21", "https://www.pikalytics.com/results/pc3fin21",
+#                            "https://www.pikalytics.com/results/pc3reg21"]
+#
+#
+#
+# urls_without_nationalities = ["https://www.pikalytics.com/results/shefreg18m", "https://www.pikalytics.com/results/madreg18m",
+#                               "https://www.pikalytics.com/results/roanreg18m", "https://www.pikalytics.com/results/torreg18m",
+#                               "https://www.pikalytics.com/results/saltreg18m", "https://www.pikalytics.com/results/sindreg18m",
+#                               "https://www.pikalytics.com/results/portreg18m", "https://www.pikalytics.com/results/charreg18m",
+#                               "https://www.pikalytics.com/results/colinreg18m", "https://www.pikalytics.com/results/malmoreg18m",
+#                               "https://www.pikalytics.com/results/leipreg18m", "https://www.pikalytics.com/results/leipreg18s",
+#                               "https://www.pikalytics.com/results/leipreg18j", "https://www.pikalytics.com/results/dalreg18m",
+#                               "https://www.pikalytics.com/results/dalreg18s", "https://www.pikalytics.com/results/dalreg18j",
+#                               "https://www.pikalytics.com/results/madisonreg19m", "https://www.pikalytics.com/results/madisonreg19s",
+#                               "https://www.pikalytics.com/results/madisonreg19j", "https://www.pikalytics.com/results/santareg19m",
+#                               "https://www.pikalytics.com/results/santareg19s", "https://www.pikalytics.com/results/santareg19j",
+#                               "https://www.pikalytics.com/results/bristreg19m", "https://www.pikalytics.com/results/bristreg19s",
+#                               "https://www.pikalytics.com/results/bristreg19j", "https://www.pikalytics.com/results/hartreg19m",
+#                               "https://www.pikalytics.com/results/hartreg19s", "https://www.pikalytics.com/results/hartreg19j",
+#                               "https://www.pikalytics.com/results/daytonareg19m", "https://www.pikalytics.com/results/daytonareg19s",
+#                               "https://www.pikalytics.com/results/daytonareg19j", "https://www.pikalytics.com/results/greenreg19m",
+#                               "https://www.pikalytics.com/results/greenreg19j", "https://www.pikalytics.com/results/bramreg19m",
+#                               "https://www.pikalytics.com/results/bramreg19s", "https://www.pikalytics.com/results/bramreg19j",
+#                               "https://www.pikalytics.com/results/colreg19m", "https://www.pikalytics.com/results/colreg19s",
+#                               "https://www.pikalytics.com/results/colreg19j", "https://www.pikalytics.com/results/dalreg19m",
+#                               "https://www.pikalytics.com/results/dalreg19s", "https://www.pikalytics.com/results/dalreg19j",
+#                               "https://www.pikalytics.com/results/haroreg19m", "https://www.pikalytics.com/results/haroreg19s",
+#                               "https://www.pikalytics.com/results/haroreg19j", "https://www.pikalytics.com/results/anareg19m",
+#                               "https://www.pikalytics.com/results/anareg19s", "https://www.pikalytics.com/results/anareg19j",
+#                               "https://www.pikalytics.com/results/roreg19m", "https://www.pikalytics.com/results/roreg19s",
+#                               "https://www.pikalytics.com/results/roreg19j", "https://www.pikalytics.com/results/portreg19m",
+#                               "https://www.pikalytics.com/results/portreg19s", "https://www.pikalytics.com/results/portreg19j",
+#                               "https://www.pikalytics.com/results/memreg19m", "https://www.pikalytics.com/results/memreg19s",
+#                               "https://www.pikalytics.com/results/memreg19j", "https://www.pikalytics.com/results/frankreg19m",
+#                               "https://www.pikalytics.com/results/frankreg19s", "https://www.pikalytics.com/results/frankreg19j",
+#                               "https://www.pikalytics.com/results/philreg19m", "https://www.pikalytics.com/results/philreg19s",
+#                               "https://www.pikalytics.com/results/philreg19j", "https://www.pikalytics.com/results/pcinv20",
+#                               "https://www.pikalytics.com/results/malmoreg20m", "https://www.pikalytics.com/results/malmoreg20s",
+#                               "https://www.pikalytics.com/results/collinsvillereg20m", "https://www.pikalytics.com/results/collinsvillereg20s",
+#                               "https://www.pikalytics.com/results/collinsvillereg20j", "https://www.pikalytics.com/results/dallasreg20m",
+#                               "https://www.pikalytics.com/results/dallasreg20s", "https://www.pikalytics.com/results/dallasreg20j",
+#                               "https://www.pikalytics.com/results/bochumreg20m", "https://www.pikalytics.com/results/bochumreg20s",
+#                               "https://www.pikalytics.com/results/bochumreg20j"]
+#
+# # TODO remove this
+# urls_with_nationalities = ["https://www.pikalytics.com/results/worlds18m"]
+# urls_without_nationalities = []
+#
+#
+# for url in urls_with_nationalities:
+#
+#      page = requests.get(url).text
+#      soup = BeautifulSoup(page, "html.parser")
+#
+#      trainer_links = soup.find_all("h2")
+#
+#
+#      for trainer in trainer_links:
+#
+#          trainer_names_string = unidecode.unidecode(trainer.text)
+#
+#          trainer_names_sub = unidecode.unidecode(re.sub(r'\([^)]*\)', '', trainer_names_string))
+#
+#
+#          trainer_names.append(trainer_names_sub)
+#
+#          trainer_nationalities_string = trainer_names_string[trainer_names_string.find("(")+1:trainer_names_string.find(")")]
+#
+#          trainer_nationalities.append(trainer_nationalities_string)
+#
+#          trainer_dictionary[unidecode.unidecode(trainer_names_sub)] = trainer_nationalities_string
+#
+#
+# # Getting the trainer names from results pages formatted like "trainer name"
+# for url in urls_without_nationalities:
+#
+#       page = requests.get(url).text
+#       soup = BeautifulSoup(page, "html.parser")
+#
+#       trainer_links = soup.find_all("h2")
+#
+#
+#
+#       for trainer in trainer_links:
+#
+#           trainer_names_string = unidecode.unidecode(trainer.text)
+#           trainer_names_sub = re.sub(r'\([^)]*\)', '', trainer_names_string)
+#
+#           trainer_names.append(unidecode.unidecode(trainer_names_sub))
+#
+#           trainer_nationalities_string = trainer_names_string[trainer_names_string.find("(")+1:trainer_names_string.find(")")]
+#
+#           trainer_nationalities.append(trainer_nationalities_string)
+#
+#
+#           if trainer_names_string[0] == trainer_nationalities_string[0] \
+#                   and trainer_names_string[1] == trainer_nationalities_string[1] \
+#                   and trainer_names_string[2] == trainer_nationalities_string[2]:
+#
+#               trainer_dictionary[trainer_names_sub] = "none"
+#
+#
+# print("here")
+#
+# # removing the duplicate key/value pairs from the trainer dictionary
+# temp = []
+# res = dict()
+# for key, val in trainer_dictionary.items():
+#
+#
+#
+#     if key not in temp:
+#         temp.append(key)
+#         res[key] = val
+
 
 #print("data_list_all_pokemon", data_list_all_pokemon)
-df_all_pokemon = pd.DataFrame(data_list_all_pokemon, columns=['pokemon_id', 'species_name', 'ability', "item", "can_gmax"])
+#for i in range(len(data_list_all_pokemon)):
+for i in range(len(data_list_all_pokemon)):
+    # df is team_id:pokemon_id
+    data_list_all_pokemon[i].append(df.loc[i].at["team_id"])
+df_all_pokemon = pd.DataFrame(data_list_all_pokemon, columns=['pokemon_id', 'species_name', 'ability', "item", "can_gmax", "team_id"])
 
+print("trainer names")
+print(trainer_names)
+trainer_team = {str(i):trainer_names[i] for i in range(len(trainer_names))}
+df_trainer_team = pd.DataFrame.from_dict(trainer_team, orient="index", columns=["trainer_name"])
+df_trainer_team.index.name = "team_id"
+print("df_trainer_team")
+print(df_trainer_team)
 
 # Updating the species name
 i = 0
@@ -1031,7 +1400,7 @@ for item in pokemon_list_moves:
 
         pokemon_with_move = pokemon_with_move + 1
 
-print(moves_ids_list)
+#print(moves_ids_list)
 
 single_move = []
 l = 0
@@ -1193,140 +1562,140 @@ print(df_all_pokemon)
 
 #%%%%%%%%%%%%%%%%% Getting info for Trainer, Tournament, Competes, Team
 
-trainer_names = []
-trainer_nationalities = []
-trainer_dictionary = {}
-
-# Getting the names and nationalities from pages formatted like "trainer name (trainer nationality)"
-
-
-urls_with_nationalities = ["https://www.pikalytics.com/results/worlds18m", "https://www.pikalytics.com/results/worlds18s",
-                           "https://www.pikalytics.com/results/worlds18j", "https://www.pikalytics.com/results/naint18m",
-                           "https://www.pikalytics.com/results/naint18s", "https://www.pikalytics.com/results/naint18j",
-                           "https://www.pikalytics.com/results/latamint18m", "https://www.pikalytics.com/results/latamint18s",
-                           "https://www.pikalytics.com/results/latamint18j", "https://www.pikalytics.com/results/oceareg18m",
-                           "https://www.pikalytics.com/results/oceareg18s", "https://www.pikalytics.com/results/oceareg18j",
-                           "https://www.pikalytics.com/results/naint19m", "https://www.pikalytics.com/results/naint19s",
-                           "https://www.pikalytics.com/results/naint19j", "https://www.pikalytics.com/results/euint19m",
-                           "https://www.pikalytics.com/results/euint19s", "https://www.pikalytics.com/results/euint19j",
-                           "https://www.pikalytics.com/results/oceania19m", "https://www.pikalytics.com/results/oceania19s",
-                           "https://www.pikalytics.com/results/oceania19j", "https://www.pikalytics.com/results/latamint19m",
-                           "https://www.pikalytics.com/results/latamint19s", "https://www.pikalytics.com/results/latamint19j",
-                           "https://www.pikalytics.com/results/pc2fin20", "https://www.pikalytics.com/results/pc2reg20",
-                           "https://www.pikalytics.com/results/pcfin20", "https://www.pikalytics.com/results/oceania20m",
-                           "https://www.pikalytics.com/results/oceania20s", "https://www.pikalytics.com/results/oceania20j",
-                           "https://www.pikalytics.com/results/pc25inv21", "https://www.pikalytics.com/results/pc4fin21",
-                           "https://www.pikalytics.com/results/pc4reg21", "https://www.pikalytics.com/results/pc3fin21",
-                           "https://www.pikalytics.com/results/pc3reg21"]
-
-
-
-urls_without_nationalities = ["https://www.pikalytics.com/results/shefreg18m", "https://www.pikalytics.com/results/madreg18m",
-                              "https://www.pikalytics.com/results/roanreg18m", "https://www.pikalytics.com/results/torreg18m",
-                              "https://www.pikalytics.com/results/saltreg18m", "https://www.pikalytics.com/results/sindreg18m",
-                              "https://www.pikalytics.com/results/portreg18m", "https://www.pikalytics.com/results/charreg18m",
-                              "https://www.pikalytics.com/results/colinreg18m", "https://www.pikalytics.com/results/malmoreg18m",
-                              "https://www.pikalytics.com/results/leipreg18m", "https://www.pikalytics.com/results/leipreg18s",
-                              "https://www.pikalytics.com/results/leipreg18j", "https://www.pikalytics.com/results/dalreg18m",
-                              "https://www.pikalytics.com/results/dalreg18s", "https://www.pikalytics.com/results/dalreg18j",
-                              "https://www.pikalytics.com/results/madisonreg19m", "https://www.pikalytics.com/results/madisonreg19s",
-                              "https://www.pikalytics.com/results/madisonreg19j", "https://www.pikalytics.com/results/santareg19m",
-                              "https://www.pikalytics.com/results/santareg19s", "https://www.pikalytics.com/results/santareg19j",
-                              "https://www.pikalytics.com/results/bristreg19m", "https://www.pikalytics.com/results/bristreg19s",
-                              "https://www.pikalytics.com/results/bristreg19j", "https://www.pikalytics.com/results/hartreg19m",
-                              "https://www.pikalytics.com/results/hartreg19s", "https://www.pikalytics.com/results/hartreg19j",
-                              "https://www.pikalytics.com/results/daytonareg19m", "https://www.pikalytics.com/results/daytonareg19s",
-                              "https://www.pikalytics.com/results/daytonareg19j", "https://www.pikalytics.com/results/greenreg19m",
-                              "https://www.pikalytics.com/results/greenreg19j", "https://www.pikalytics.com/results/bramreg19m",
-                              "https://www.pikalytics.com/results/bramreg19s", "https://www.pikalytics.com/results/bramreg19j",
-                              "https://www.pikalytics.com/results/colreg19m", "https://www.pikalytics.com/results/colreg19s",
-                              "https://www.pikalytics.com/results/colreg19j", "https://www.pikalytics.com/results/dalreg19m",
-                              "https://www.pikalytics.com/results/dalreg19s", "https://www.pikalytics.com/results/dalreg19j",
-                              "https://www.pikalytics.com/results/haroreg19m", "https://www.pikalytics.com/results/haroreg19s",
-                              "https://www.pikalytics.com/results/haroreg19j", "https://www.pikalytics.com/results/anareg19m",
-                              "https://www.pikalytics.com/results/anareg19s", "https://www.pikalytics.com/results/anareg19j",
-                              "https://www.pikalytics.com/results/roreg19m", "https://www.pikalytics.com/results/roreg19s",
-                              "https://www.pikalytics.com/results/roreg19j", "https://www.pikalytics.com/results/portreg19m",
-                              "https://www.pikalytics.com/results/portreg19s", "https://www.pikalytics.com/results/portreg19j",
-                              "https://www.pikalytics.com/results/memreg19m", "https://www.pikalytics.com/results/memreg19s",
-                              "https://www.pikalytics.com/results/memreg19j", "https://www.pikalytics.com/results/frankreg19m",
-                              "https://www.pikalytics.com/results/frankreg19s", "https://www.pikalytics.com/results/frankreg19j",
-                              "https://www.pikalytics.com/results/philreg19m", "https://www.pikalytics.com/results/philreg19s",
-                              "https://www.pikalytics.com/results/philreg19j", "https://www.pikalytics.com/results/pcinv20",
-                              "https://www.pikalytics.com/results/malmoreg20m", "https://www.pikalytics.com/results/malmoreg20s",
-                              "https://www.pikalytics.com/results/collinsvillereg20m", "https://www.pikalytics.com/results/collinsvillereg20s",
-                              "https://www.pikalytics.com/results/collinsvillereg20j", "https://www.pikalytics.com/results/dallasreg20m",
-                              "https://www.pikalytics.com/results/dallasreg20s", "https://www.pikalytics.com/results/dallasreg20j",
-                              "https://www.pikalytics.com/results/bochumreg20m", "https://www.pikalytics.com/results/bochumreg20s",
-                              "https://www.pikalytics.com/results/bochumreg20j"]
-
-
-for url in urls_with_nationalities:
-
-     page = requests.get(url).text
-     soup = BeautifulSoup(page, "html.parser")
-
-     trainer_links = soup.find_all("h2")
-
-
-     for trainer in trainer_links:
-
-         trainer_names_string = unidecode.unidecode(trainer.text)
-
-         trainer_names_sub = unidecode.unidecode(re.sub(r'\([^)]*\)', '', trainer_names_string))
-
-
-         trainer_names.append(trainer_names_sub)
-
-         trainer_nationalities_string = trainer_names_string[trainer_names_string.find("(")+1:trainer_names_string.find(")")]
-
-         trainer_nationalities.append(trainer_nationalities_string)
-
-         trainer_dictionary[unidecode.unidecode(trainer_names_sub)] = trainer_nationalities_string
-
-
-# Getting the trainer names from results pages formatted like "trainer name"
-for url in urls_without_nationalities:
-
-      page = requests.get(url).text
-      soup = BeautifulSoup(page, "html.parser")
-
-      trainer_links = soup.find_all("h2")
-
-
-
-      for trainer in trainer_links:
-
-          trainer_names_string = unidecode.unidecode(trainer.text)
-          trainer_names_sub = re.sub(r'\([^)]*\)', '', trainer_names_string)
-
-          trainer_names.append(unidecode.unidecode(trainer_names_sub))
-
-          trainer_nationalities_string = trainer_names_string[trainer_names_string.find("(")+1:trainer_names_string.find(")")]
-
-          trainer_nationalities.append(trainer_nationalities_string)
-
-
-          if trainer_names_string[0] == trainer_nationalities_string[0] \
-                  and trainer_names_string[1] == trainer_nationalities_string[1] \
-                  and trainer_names_string[2] == trainer_nationalities_string[2]:
-
-              trainer_dictionary[trainer_names_sub] = "none"
-
-#print(trainer_dictionary)
-
-
-# removing the duplicate key/value pairs from the trainer dictionary
-temp = []
-res = dict()
-for key, val in trainer_dictionary.items():
-
-
-
-    if key not in temp:
-        temp.append(key)
-        res[key] = val
-
+# trainer_names = []
+# trainer_nationalities = []
+# trainer_dictionary = {}
+#
+# # Getting the names and nationalities from pages formatted like "trainer name (trainer nationality)"
+#
+#
+# urls_with_nationalities = ["https://www.pikalytics.com/results/worlds18m", "https://www.pikalytics.com/results/worlds18s",
+#                            "https://www.pikalytics.com/results/worlds18j", "https://www.pikalytics.com/results/naint18m",
+#                            "https://www.pikalytics.com/results/naint18s", "https://www.pikalytics.com/results/naint18j",
+#                            "https://www.pikalytics.com/results/latamint18m", "https://www.pikalytics.com/results/latamint18s",
+#                            "https://www.pikalytics.com/results/latamint18j", "https://www.pikalytics.com/results/oceareg18m",
+#                            "https://www.pikalytics.com/results/oceareg18s", "https://www.pikalytics.com/results/oceareg18j",
+#                            "https://www.pikalytics.com/results/naint19m", "https://www.pikalytics.com/results/naint19s",
+#                            "https://www.pikalytics.com/results/naint19j", "https://www.pikalytics.com/results/euint19m",
+#                            "https://www.pikalytics.com/results/euint19s", "https://www.pikalytics.com/results/euint19j",
+#                            "https://www.pikalytics.com/results/oceania19m", "https://www.pikalytics.com/results/oceania19s",
+#                            "https://www.pikalytics.com/results/oceania19j", "https://www.pikalytics.com/results/latamint19m",
+#                            "https://www.pikalytics.com/results/latamint19s", "https://www.pikalytics.com/results/latamint19j",
+#                            "https://www.pikalytics.com/results/pc2fin20", "https://www.pikalytics.com/results/pc2reg20",
+#                            "https://www.pikalytics.com/results/pcfin20", "https://www.pikalytics.com/results/oceania20m",
+#                            "https://www.pikalytics.com/results/oceania20s", "https://www.pikalytics.com/results/oceania20j",
+#                            "https://www.pikalytics.com/results/pc25inv21", "https://www.pikalytics.com/results/pc4fin21",
+#                            "https://www.pikalytics.com/results/pc4reg21", "https://www.pikalytics.com/results/pc3fin21",
+#                            "https://www.pikalytics.com/results/pc3reg21"]
+#
+#
+#
+# urls_without_nationalities = ["https://www.pikalytics.com/results/shefreg18m", "https://www.pikalytics.com/results/madreg18m",
+#                               "https://www.pikalytics.com/results/roanreg18m", "https://www.pikalytics.com/results/torreg18m",
+#                               "https://www.pikalytics.com/results/saltreg18m", "https://www.pikalytics.com/results/sindreg18m",
+#                               "https://www.pikalytics.com/results/portreg18m", "https://www.pikalytics.com/results/charreg18m",
+#                               "https://www.pikalytics.com/results/colinreg18m", "https://www.pikalytics.com/results/malmoreg18m",
+#                               "https://www.pikalytics.com/results/leipreg18m", "https://www.pikalytics.com/results/leipreg18s",
+#                               "https://www.pikalytics.com/results/leipreg18j", "https://www.pikalytics.com/results/dalreg18m",
+#                               "https://www.pikalytics.com/results/dalreg18s", "https://www.pikalytics.com/results/dalreg18j",
+#                               "https://www.pikalytics.com/results/madisonreg19m", "https://www.pikalytics.com/results/madisonreg19s",
+#                               "https://www.pikalytics.com/results/madisonreg19j", "https://www.pikalytics.com/results/santareg19m",
+#                               "https://www.pikalytics.com/results/santareg19s", "https://www.pikalytics.com/results/santareg19j",
+#                               "https://www.pikalytics.com/results/bristreg19m", "https://www.pikalytics.com/results/bristreg19s",
+#                               "https://www.pikalytics.com/results/bristreg19j", "https://www.pikalytics.com/results/hartreg19m",
+#                               "https://www.pikalytics.com/results/hartreg19s", "https://www.pikalytics.com/results/hartreg19j",
+#                               "https://www.pikalytics.com/results/daytonareg19m", "https://www.pikalytics.com/results/daytonareg19s",
+#                               "https://www.pikalytics.com/results/daytonareg19j", "https://www.pikalytics.com/results/greenreg19m",
+#                               "https://www.pikalytics.com/results/greenreg19j", "https://www.pikalytics.com/results/bramreg19m",
+#                               "https://www.pikalytics.com/results/bramreg19s", "https://www.pikalytics.com/results/bramreg19j",
+#                               "https://www.pikalytics.com/results/colreg19m", "https://www.pikalytics.com/results/colreg19s",
+#                               "https://www.pikalytics.com/results/colreg19j", "https://www.pikalytics.com/results/dalreg19m",
+#                               "https://www.pikalytics.com/results/dalreg19s", "https://www.pikalytics.com/results/dalreg19j",
+#                               "https://www.pikalytics.com/results/haroreg19m", "https://www.pikalytics.com/results/haroreg19s",
+#                               "https://www.pikalytics.com/results/haroreg19j", "https://www.pikalytics.com/results/anareg19m",
+#                               "https://www.pikalytics.com/results/anareg19s", "https://www.pikalytics.com/results/anareg19j",
+#                               "https://www.pikalytics.com/results/roreg19m", "https://www.pikalytics.com/results/roreg19s",
+#                               "https://www.pikalytics.com/results/roreg19j", "https://www.pikalytics.com/results/portreg19m",
+#                               "https://www.pikalytics.com/results/portreg19s", "https://www.pikalytics.com/results/portreg19j",
+#                               "https://www.pikalytics.com/results/memreg19m", "https://www.pikalytics.com/results/memreg19s",
+#                               "https://www.pikalytics.com/results/memreg19j", "https://www.pikalytics.com/results/frankreg19m",
+#                               "https://www.pikalytics.com/results/frankreg19s", "https://www.pikalytics.com/results/frankreg19j",
+#                               "https://www.pikalytics.com/results/philreg19m", "https://www.pikalytics.com/results/philreg19s",
+#                               "https://www.pikalytics.com/results/philreg19j", "https://www.pikalytics.com/results/pcinv20",
+#                               "https://www.pikalytics.com/results/malmoreg20m", "https://www.pikalytics.com/results/malmoreg20s",
+#                               "https://www.pikalytics.com/results/collinsvillereg20m", "https://www.pikalytics.com/results/collinsvillereg20s",
+#                               "https://www.pikalytics.com/results/collinsvillereg20j", "https://www.pikalytics.com/results/dallasreg20m",
+#                               "https://www.pikalytics.com/results/dallasreg20s", "https://www.pikalytics.com/results/dallasreg20j",
+#                               "https://www.pikalytics.com/results/bochumreg20m", "https://www.pikalytics.com/results/bochumreg20s",
+#                               "https://www.pikalytics.com/results/bochumreg20j"]
+#
+#
+# for url in urls_with_nationalities:
+#
+#      page = requests.get(url).text
+#      soup = BeautifulSoup(page, "html.parser")
+#
+#      trainer_links = soup.find_all("h2")
+#
+#
+#      for trainer in trainer_links:
+#
+#          trainer_names_string = unidecode.unidecode(trainer.text)
+#
+#          trainer_names_sub = unidecode.unidecode(re.sub(r'\([^)]*\)', '', trainer_names_string))
+#
+#
+#          trainer_names.append(trainer_names_sub)
+#
+#          trainer_nationalities_string = trainer_names_string[trainer_names_string.find("(")+1:trainer_names_string.find(")")]
+#
+#          trainer_nationalities.append(trainer_nationalities_string)
+#
+#          trainer_dictionary[unidecode.unidecode(trainer_names_sub)] = trainer_nationalities_string
+#
+#
+# # Getting the trainer names from results pages formatted like "trainer name"
+# for url in urls_without_nationalities:
+#
+#       page = requests.get(url).text
+#       soup = BeautifulSoup(page, "html.parser")
+#
+#       trainer_links = soup.find_all("h2")
+#
+#
+#
+#       for trainer in trainer_links:
+#
+#           trainer_names_string = unidecode.unidecode(trainer.text)
+#           trainer_names_sub = re.sub(r'\([^)]*\)', '', trainer_names_string)
+#
+#           trainer_names.append(unidecode.unidecode(trainer_names_sub))
+#
+#           trainer_nationalities_string = trainer_names_string[trainer_names_string.find("(")+1:trainer_names_string.find(")")]
+#
+#           trainer_nationalities.append(trainer_nationalities_string)
+#
+#
+#           if trainer_names_string[0] == trainer_nationalities_string[0] \
+#                   and trainer_names_string[1] == trainer_nationalities_string[1] \
+#                   and trainer_names_string[2] == trainer_nationalities_string[2]:
+#
+#               trainer_dictionary[trainer_names_sub] = "none"
+#
+#
+#
+#
+# # removing the duplicate key/value pairs from the trainer dictionary
+# temp = []
+# res = dict()
+# for key, val in trainer_dictionary.items():
+#
+#
+#
+#     if key not in temp:
+#         temp.append(key)
+#         res[key] = val
+#
 
 # Getting the tournament info for the tournament table
 
@@ -1520,7 +1889,7 @@ has_ability_df.to_sql("has_ability", engine, if_exists="append",index=False)
 
 learns_move_df.to_sql("learns_move", engine, if_exists="append", index=False)
 
-print(df_all_pokemon)
+# print(df_all_pokemon)
 df_all_pokemon.to_sql("pokemon", engine, if_exists="append", index=False, chunksize=4)
 
 df_hasMove.to_sql("has_move", engine, if_exists="append", index=False)
@@ -1578,3 +1947,4 @@ for key in placement_dictionary:
           mycursor.execute(sql3)
           mydb.commit()
 
+df_trainer_team.to_sql("team", engine, if_exists="append")
